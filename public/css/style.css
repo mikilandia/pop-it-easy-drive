@@ -446,7 +446,65 @@ body.theme-cork .board-background {
   flex: 1;
   padding: 24px;
   overflow-x: auto;
-  overflow-y: auto;
+  overflow-y: hidden;
+  position: relative;
+  scroll-behavior: smooth;
+}
+
+/* Barra de desplazamiento horizontal visible y luminosa */
+.board-viewport::-webkit-scrollbar {
+  height: 12px;
+}
+.board-viewport::-webkit-scrollbar-track {
+  background: rgba(18, 24, 36, 0.9);
+  border-radius: 8px;
+  margin: 0 40px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.board-viewport::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #0284c7, #38bdf8);
+  border-radius: 8px;
+  border: 2px solid #0f141c;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+}
+.board-viewport::-webkit-scrollbar-thumb:hover {
+  background: #38bdf8;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.8);
+}
+
+/* Botones flotantes para desplazar el tablero a la izquierda y derecha */
+.board-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 60px;
+  background: rgba(24, 32, 45, 0.9);
+  border: 2px solid #38bdf8;
+  color: #38bdf8;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 85;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.board-nav-btn:hover {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #ffffff;
+  transform: translateY(-50%) scale(1.08);
+}
+.board-nav-btn.btn-left {
+  left: 8px;
+}
+.board-nav-btn.btn-right {
+  right: 12px;
 }
 
 .columns-container {
@@ -454,6 +512,7 @@ body.theme-cork .board-background {
   gap: 22px;
   align-items: flex-start;
   min-width: min-content;
+  padding-bottom: 12px;
 }
 
 /* Column Design */
@@ -466,7 +525,7 @@ body.theme-cork .board-background {
   border-radius: 16px;
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 180px);
+  max-height: calc(100vh - 190px);
 }
 
 .column-header {
@@ -736,11 +795,11 @@ body.theme-cork .board-background {
   flex-direction: column;
   position: relative;
   z-index: 90;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .parking-lot-sidebar.collapsed {
-  transform: translateX(calc(var(--sidebar-width) - 48px));
+  transform: translateX(var(--sidebar-width));
 }
 
 .parking-header {
@@ -750,6 +809,7 @@ body.theme-cork .board-background {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
 }
 
 .parking-title {
@@ -777,12 +837,37 @@ body.theme-cork .board-background {
   border-radius: 4px;
 }
 
+/* Pestaña flotante siempre visible para abrir y cerrar el estacionamiento */
 .parking-toggle-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
+  position: absolute;
+  left: -42px;
+  top: 14px;
+  width: 42px;
+  height: 52px;
+  background: #18202d;
+  border: 2px solid #f59e0b;
+  border-right: none;
+  border-radius: 12px 0 0 12px;
+  color: #f59e0b;
   cursor: pointer;
-  font-size: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  z-index: 999;
+  box-shadow: -6px 4px 18px rgba(0, 0, 0, 0.55);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.parking-toggle-btn:hover {
+  background: #232d3f;
+  color: #fbbf24;
+  border-color: #fbbf24;
+  left: -46px;
+  width: 46px;
 }
 
 /* Asphalt Road Texture for Parking Bays */
@@ -1263,4 +1348,149 @@ textarea.form-control {
     bottom: 0;
     box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
   }
+}
+
+/* ==========================================================================
+   NAVEGACIÓN RÁPIDA DE COLUMNAS DEL TABLERO
+   ========================================================================== */
+.column-jump-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 2px 0;
+}
+
+.column-jump-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.column-jump-btn:hover {
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--brand-primary);
+  border-color: var(--brand-primary);
+}
+
+/* ==========================================================================
+   MODAL DE GESTIÓN DE USUARIOS (SOLO ADMINISTRADOR)
+   ========================================================================== */
+.admin-user-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 16px;
+  transition: border-color 0.2s ease;
+}
+
+.admin-user-card:hover {
+  border-color: var(--border-highlight);
+}
+
+.admin-user-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-user-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 2px solid var(--brand-primary);
+}
+
+.admin-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-user-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.admin-user-username {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.admin-user-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.role-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.role-badge.admin {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.role-badge.basic {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.shift-tag {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.admin-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-pin-badge {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: #e2e8f0;
+}
+
+.btn-delete-user {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-user:hover {
+  background: #ef4444;
+  color: #ffffff;
 }

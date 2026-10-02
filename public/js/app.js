@@ -254,11 +254,31 @@ function renderBoard() {
     glowBadgeElem.textContent = glowingCount;
   }
 
+  // Renderizar botones de salto rápido a columnas
+  const jumpContainer = document.getElementById('column-jump-pills');
+  if (jumpContainer) {
+    jumpContainer.innerHTML = state.boards.map(col => {
+      const parts = col.title.split(' ');
+      const emoji = parts[0] || '📌';
+      const label = parts[1] || col.id;
+      return `<button class="column-jump-btn" data-target="col-${col.id}" title="Ir a ${col.title}">${emoji} ${label}</button>`;
+    }).join('');
+
+    jumpContainer.querySelectorAll('.column-jump-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = document.getElementById(btn.dataset.target);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+      });
+    });
+  }
+
   container.innerHTML = state.boards.map(col => {
     const colPopits = filteredPopits.filter(p => p.category === col.id);
 
     return `
-      <div class="board-column" data-col-id="${col.id}">
+      <div class="board-column" id="col-${col.id}" data-col-id="${col.id}">
         <div class="column-header">
           <div class="column-title-group">
             <span class="column-title">${col.title}</span>
@@ -791,32 +811,6 @@ function setupEventListeners() {
     inviteBtn.addEventListener('click', () => openModal('modal-invite'));
   }
 
-  // Auth Modal Switching (Login vs Register)
-  const tabLogin = document.getElementById('tab-auth-login');
-  const tabRegister = document.getElementById('tab-auth-register');
-  const viewLogin = document.getElementById('view-auth-login');
-  const viewRegister = document.getElementById('view-auth-register');
-
-  if (tabLogin && tabRegister) {
-    tabLogin.addEventListener('click', () => {
-      tabLogin.classList.add('active');
-      tabRegister.classList.remove('active');
-      viewLogin.style.display = 'block';
-      viewRegister.style.display = 'none';
-    });
-
-    tabRegister.addEventListener('click', () => {
-      tabRegister.classList.add('active');
-      tabLogin.classList.remove('active');
-      viewRegister.style.display = 'block';
-      viewLogin.style.display = 'none';
-      if (!state.selectedGifForProfile && state.gifs.length > 0) {
-        state.selectedGifForProfile = state.gifs[0].url;
-        renderGifPickers();
-      }
-    });
-  }
-
   // Login Form Submit
   const formLogin = document.getElementById('form-login');
   if (formLogin) {
@@ -850,37 +844,95 @@ function setupEventListeners() {
     });
   }
 
-  // Register Form Submit
-  const formRegister = document.getElementById('form-register');
-  if (formRegister) {
-    formRegister.addEventListener('submit', async (e) => {
+  // =========================================================================
+  // GESTIÓN DE USUARIOS (SOLO ADMINISTRADOR)
+  // =========================================================================
+  const btnManageUsers = document.getElementById('btn-manage-users');
+  if (btnManageUsers) {
+    btnManageUsers.addEventListener('click', () => {
+      openModal('modal-manage-users');
+      renderAdminUserGifPicker();
+      loadAdminUsersList();
+    });
+  }
+
+  const tabAdminCreate = document.getElementById('tab-admin-create-user');
+  const tabAdminList = document.getElementById('tab-admin-list-users');
+  const viewAdminCreate = document.getElementById('view-admin-create-user');
+  const viewAdminList = document.getElementById('view-admin-list-users');
+
+  if (tabAdminCreate && tabAdminList) {
+    tabAdminCreate.addEventListener('click', () => {
+      tabAdminCreate.style.borderBottom = '2px solid var(--brand-primary)';
+      tabAdminCreate.style.color = 'var(--text-main)';
+      tabAdminList.style.borderBottom = 'none';
+      tabAdminList.style.color = 'var(--text-muted)';
+      viewAdminCreate.style.display = 'block';
+      viewAdminList.style.display = 'none';
+    });
+
+    tabAdminList.addEventListener('click', () => {
+      tabAdminList.style.borderBottom = '2px solid var(--brand-primary)';
+      tabAdminList.style.color = 'var(--text-main)';
+      tabAdminCreate.style.borderBottom = 'none';
+      tabAdminCreate.style.color = 'var(--text-muted)';
+      viewAdminList.style.display = 'block';
+      viewAdminCreate.style.display = 'none';
+      loadAdminUsersList();
+    });
+  }
+
+  // Formulario de creación de cuenta por el Admin
+  const formAdminCreateUser = document.getElementById('form-admin-create-user');
+  if (formAdminCreateUser) {
+    formAdminCreateUser.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const username = document.getElementById('reg-username').value.trim();
-      const displayName = document.getElementById('reg-displayname').value.trim();
-      const shift = document.getElementById('reg-shift').value;
-      const pin = document.getElementById('reg-pin').value.trim();
-      const avatarGif = state.selectedGifForProfile || (state.gifs[0] ? state.gifs[0].url : 'https://media.giphy.com/media/unQ3IJU2RG7DO/giphy.gif');
-      const errorMsg = document.getElementById('reg-error-msg');
+      if (!state.currentUser || state.currentUser.role !== 'admin') {
+        alert('Solo el Administrador puede crear cuentas.');
+        return;
+      }
+
+      const username = document.getElementById('admin-new-username').value.trim();
+      const displayName = document.getElementById('admin-new-displayname').value.trim();
+      const role = document.getElementById('admin-new-role').value;
+      const shift = document.getElementById('admin-new-shift').value;
+      const pin = document.getElementById('admin-new-pin').value.trim();
+      const errorMsg = document.getElementById('admin-user-error-msg');
 
       try {
-        const res = await fetch('/api/register', {
+        const res = await fetch('/api/admin/users', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, displayName, shift, pin, avatarGif })
+          body: JSON.stringify({
+            adminUsername: state.currentUser.username,
+            username,
+            displayName,
+            role,
+            shift,
+            pin,
+            avatarGif: selectedAdminUserGif || (state.gifs[0] ? state.gifs[0].url : 'https://media.giphy.com/media/unQ3IJU2RG7DO/giphy.gif')
+          })
         });
+
         const data = await res.json();
         if (!res.ok) {
-          errorMsg.textContent = data.error || 'Error al registrar usuario';
+          errorMsg.textContent = data.error || 'Error al crear usuario';
           errorMsg.style.display = 'block';
           return;
         }
 
         errorMsg.style.display = 'none';
-        saveUser(data.user);
-        closeModal('modal-auth');
-        window.soundEngine.playUserConnected();
+        formAdminCreateUser.reset();
+        showToast({
+          title: '✅ Usuario creado',
+          message: `Cuenta para "${data.user.displayName}" habilitada en ${data.user.shift}`,
+          avatar: data.user.avatarGif
+        });
+
+        // Ir a la pestaña de lista de usuarios
+        if (tabAdminList) tabAdminList.click();
       } catch (err) {
-        errorMsg.textContent = 'Error de conexión';
+        errorMsg.textContent = 'Error de conexión con el servidor';
         errorMsg.style.display = 'block';
       }
     });
@@ -963,13 +1015,92 @@ function setupEventListeners() {
     });
   }
 
-  // Parking Sidebar Toggle
+  // Parking Sidebar Toggle & Re-open Handler
   const parkingToggle = document.getElementById('parking-toggle-btn');
   const parkingSidebar = document.getElementById('parking-sidebar');
   if (parkingToggle && parkingSidebar) {
-    parkingToggle.addEventListener('click', () => {
+    function updateParkingToggleUI() {
+      const isCollapsed = parkingSidebar.classList.contains('collapsed');
+      parkingToggle.innerHTML = isCollapsed ? '◀<span style="font-size: 10px;">🚗</span>' : '▶';
+      parkingToggle.title = isCollapsed ? 'Expandir Estacionamiento' : 'Contraer Estacionamiento';
+    }
+
+    parkingToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
       parkingSidebar.classList.toggle('collapsed');
-      parkingToggle.textContent = parkingSidebar.classList.contains('collapsed') ? '◀' : '▶';
+      updateParkingToggleUI();
+    });
+
+    // Si hacen clic en el borde visible del estacionamiento colapsado, abrirlo
+    parkingSidebar.addEventListener('click', (e) => {
+      if (parkingSidebar.classList.contains('collapsed') && e.target !== parkingToggle) {
+        parkingSidebar.classList.remove('collapsed');
+        updateParkingToggleUI();
+      }
+    });
+
+    updateParkingToggleUI();
+  }
+
+  // =========================================================================
+  // NAVEGACIÓN Y DESPLAZAMIENTO HORIZONTAL DEL TABLERO
+  // =========================================================================
+  const boardViewport = document.getElementById('board-viewport');
+  const btnScrollLeft = document.getElementById('btn-board-scroll-left');
+  const btnScrollRight = document.getElementById('btn-board-scroll-right');
+
+  if (btnScrollLeft && boardViewport) {
+    btnScrollLeft.addEventListener('click', () => {
+      boardViewport.scrollBy({ left: -360, behavior: 'smooth' });
+    });
+  }
+
+  if (btnScrollRight && boardViewport) {
+    btnScrollRight.addEventListener('click', () => {
+      boardViewport.scrollBy({ left: 360, behavior: 'smooth' });
+    });
+  }
+
+  if (boardViewport) {
+    // Desplazamiento horizontal con la rueda del ratón
+    boardViewport.addEventListener('wheel', (e) => {
+      const cardsCont = e.target.closest('.cards-container');
+      if (cardsCont && cardsCont.scrollHeight > cardsCont.clientHeight) {
+        const atBottom = e.deltaY > 0 && cardsCont.scrollTop + cardsCont.clientHeight >= cardsCont.scrollHeight - 2;
+        const atTop = e.deltaY < 0 && cardsCont.scrollTop <= 2;
+        if (!atBottom && !atTop) {
+          return; // Permitir scroll vertical normal dentro de la columna
+        }
+      }
+      if (e.deltaY !== 0) {
+        boardViewport.scrollLeft += e.deltaY * 1.5;
+      }
+    }, { passive: true });
+
+    // Arrastrar con el ratón (pan drag)
+    let isDown = false;
+    let startX = 0;
+    let initialScrollLeft = 0;
+
+    boardViewport.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.popit-card') || e.target.closest('button') || e.target.closest('input') || e.target.closest('select')) return;
+      isDown = true;
+      boardViewport.style.cursor = 'grabbing';
+      startX = e.pageX - boardViewport.offsetLeft;
+      initialScrollLeft = boardViewport.scrollLeft;
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDown = false;
+      if (boardViewport) boardViewport.style.cursor = 'default';
+    });
+
+    boardViewport.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - boardViewport.offsetLeft;
+      const walk = (x - startX) * 1.6;
+      boardViewport.scrollLeft = initialScrollLeft - walk;
     });
   }
 
@@ -1100,4 +1231,97 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+// 17. Funciones para Administración de Usuarios
+let selectedAdminUserGif = null;
+
+function renderAdminUserGifPicker() {
+  const container = document.getElementById('admin-user-gif-picker');
+  if (!container) return;
+  if (!selectedAdminUserGif && state.gifs.length > 0) {
+    selectedAdminUserGif = state.gifs[0].url;
+  }
+  container.innerHTML = state.gifs.map(g => `
+    <div class="gif-picker-item ${selectedAdminUserGif === g.url ? 'selected' : ''}" data-url="${g.url}">
+      <img src="${g.url}" alt="${g.title}">
+    </div>
+  `).join('');
+
+  container.querySelectorAll('.gif-picker-item').forEach(item => {
+    item.addEventListener('click', () => {
+      container.querySelectorAll('.gif-picker-item').forEach(i => i.classList.remove('selected'));
+      item.classList.add('selected');
+      selectedAdminUserGif = item.dataset.url;
+    });
+  });
+}
+
+async function loadAdminUsersList() {
+  const container = document.getElementById('admin-users-list-container');
+  const countBadge = document.getElementById('admin-users-count');
+  if (!container) return;
+
+  try {
+    const res = await fetch('/api/admin/users');
+    const users = await res.json();
+    if (countBadge) countBadge.textContent = users.length;
+
+    container.innerHTML = users.map(u => `
+      <div class="admin-user-card">
+        <div class="admin-user-left">
+          <img src="${u.avatarGif}" class="admin-user-avatar" alt="${u.displayName}">
+          <div class="admin-user-info">
+            <span class="admin-user-name">${escapeHtml(u.displayName)}</span>
+            <span class="admin-user-username">@${escapeHtml(u.username)}</span>
+            <div class="admin-user-tags">
+              <span class="role-badge ${u.role}">${u.role === 'admin' ? 'ADMINISTRADOR' : 'OPERADOR'}</span>
+              <span class="shift-tag">${escapeHtml(u.shift)}</span>
+            </div>
+          </div>
+        </div>
+        <div class="admin-user-actions">
+          <span class="admin-pin-badge" title="PIN o contraseña">🔑 PIN: ${escapeHtml(u.pin || '1234')}</span>
+          ${u.username !== 'admin' ? `
+            <button class="btn-delete-user" data-user-id="${u.id}" data-username="${u.username}">
+              🗑️ Eliminar
+            </button>
+          ` : `
+            <span style="font-size: 0.72rem; color: #f59e0b; padding: 4px 8px; font-weight: 700;">★ Principal</span>
+          `}
+        </div>
+      </div>
+    `).join('');
+
+    // Eventos para eliminar usuario
+    container.querySelectorAll('.btn-delete-user').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const uId = btn.dataset.userId;
+        const uName = btn.dataset.username;
+        if (!confirm(`¿Eliminar al usuario "@${uName}"? No podrá volver a ingresar.`)) return;
+
+        try {
+          const res = await fetch(`/api/admin/users/${uId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ adminUsername: state.currentUser ? state.currentUser.username : 'admin' })
+          });
+          const resData = await res.json();
+          if (res.ok) {
+            showToast({
+              title: '🗑️ Usuario eliminado',
+              message: `El usuario @${uName} fue removido del sistema.`
+            });
+            loadAdminUsersList();
+          } else {
+            alert(resData.error || 'Error al eliminar usuario');
+          }
+        } catch (e) {
+          alert('Error de conexión al eliminar usuario');
+        }
+      });
+    });
+  } catch (err) {
+    container.innerHTML = '<div style="color: #ef4444; padding: 16px;">Error al cargar la lista de usuarios.</div>';
+  }
 }

@@ -25,6 +25,19 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
+
+// Asegurar carga de index.html en la raíz
+app.get('/', (req, res) => {
+  const publicIndex = path.join(__dirname, 'public', 'index.html');
+  const rootIndex = path.join(__dirname, 'index.html');
+  if (fs.existsSync(publicIndex)) {
+    return res.sendFile(publicIndex);
+  } else if (fs.existsSync(rootIndex)) {
+    return res.sendFile(rootIndex);
+  }
+  res.status(404).send('No se encontró index.html');
+});
 
 // Configure Multer for GIF uploads
 const storage = multer.diskStorage({
@@ -156,24 +169,38 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-// 3. Register New Basic User
-app.post('/api/register', (req, res) => {
-  const { username, displayName, shift, avatarGif, pin } = req.body;
-  if (!username || !displayName) {
-    return res.status(400).json({ error: 'Usuario y Nombre son obligatorios' });
+// 3. Admin User Management (Solo el Administrador puede crear y gestionar cuentas)
+app.get('/api/admin/users', (req, res) => {
+  const users = readJson('users.json', []);
+  // Devolver usuarios sin exponer contraseñas innecesariamente, pero permitiendo al admin ver los operadores
+  res.json(users);
+});
+
+app.post('/api/admin/users', (req, res) => {
+  const { adminUsername, username, displayName, role, shift, avatarGif, pin } = req.body;
+  const users = readJson('users.json', []);
+
+  // Verificar que el solicitante sea Administrador
+  const admin = users.find(u => u.username.toLowerCase() === (adminUsername || '').toLowerCase() && u.role === 'admin');
+  if (!admin) {
+    return res.status(403).json({ error: 'Acceso denegado: Solo el Administrador puede crear cuentas de usuario.' });
   }
 
-  const users = readJson('users.json', []);
-  const existing = users.find(u => u.username.toLowerCase() === username.trim().toLowerCase());
+  if (!username || !displayName) {
+    return res.status(400).json({ error: 'Nombre de usuario y Nombre completo son obligatorios.' });
+  }
+
+  const cleanUsername = username.trim().toLowerCase();
+  const existing = users.find(u => u.username.toLowerCase() === cleanUsername);
   if (existing) {
-    return res.status(409).json({ error: 'Ese nombre de usuario ya está registrado' });
+    return res.status(409).json({ error: `El usuario "${cleanUsername}" ya existe en el sistema.` });
   }
 
   const newUser = {
     id: `usr-${Date.now()}`,
-    username: username.trim().toLowerCase(),
+    username: cleanUsername,
     displayName: displayName.trim(),
-    role: 'basic',
+    role: role === 'admin' ? 'admin' : 'basic',
     pin: pin ? pin.trim() : '1234',
     shift: shift || 'Turno Mañana',
     avatarGif: avatarGif || 'https://media.giphy.com/media/unQ3IJU2RG7DO/giphy.gif',
@@ -185,15 +212,39 @@ app.post('/api/register', (req, res) => {
 
   res.status(201).json({
     success: true,
-    user: {
-      id: newUser.id,
-      username: newUser.username,
-      displayName: newUser.displayName,
-      role: newUser.role,
-      shift: newUser.shift,
-      avatarGif: newUser.avatarGif
-    }
+    user: newUser
   });
+});
+
+app.delete('/api/admin/users/:id', (req, res) => {
+  const { id } = req.params;
+  const { adminUsername } = req.body;
+  const users = readJson('users.json', []);
+
+  // Verificar admin
+  const admin = users.find(u => u.username.toLowerCase() === (adminUsername || '').toLowerCase() && u.role === 'admin');
+  if (!admin) {
+    return res.status(403).json({ error: 'Acceso denegado: Solo el Administrador puede eliminar usuarios.' });
+  }
+
+  const userToDelete = users.find(u => u.id === id);
+  if (!userToDelete) {
+    return res.status(404).json({ error: 'Usuario no encontrado.' });
+  }
+
+  if (userToDelete.username === 'admin') {
+    return res.status(400).json({ error: 'No es posible eliminar al Administrador Principal.' });
+  }
+
+  const updatedUsers = users.filter(u => u.id !== id);
+  writeJson('users.json', updatedUsers);
+
+  res.json({ success: true, message: `Usuario ${userToDelete.username} eliminado correctamente.` });
+});
+
+// Desactivar registro público
+app.post('/api/register', (req, res) => {
+  res.status(403).json({ error: 'El registro público está desactivado. Solo el administrador puede crear nuevas cuentas.' });
 });
 
 // 4. Update Profile (Change Shift or Avatar)

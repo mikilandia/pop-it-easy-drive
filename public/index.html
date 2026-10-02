@@ -36,6 +36,10 @@
         <span>🖼️</span> Galería de GIFs
       </button>
 
+      <button class="btn btn-secondary admin-only" id="btn-manage-users" style="display: none;" title="Crear y gestionar cuentas de usuarios">
+        <span>👥</span> Usuarios
+      </button>
+
       <!-- Network / Invite Colleagues Button -->
       <button class="btn btn-secondary" id="btn-invite-colleagues" title="Compartir enlace para compañeros en red">
         <span>🌐</span> Conectar Compañeros
@@ -84,10 +88,15 @@
         <div class="color-pill" data-color="blue" title="Azul: Procedimiento / Calidad"></div>
         <div class="color-pill" data-color="purple" title="Morado: Relevo de Turno"></div>
       </div>
+
+      <!-- Quick Jump to Columns -->
+      <div class="column-jump-pills" id="column-jump-pills" title="Ir directamente a una columna">
+        <!-- Rendered dynamically -->
+      </div>
     </div>
 
     <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
-      <span>💡 <em>Los Pop It modificados resplandecen por 24 horas completas</em></span>
+      <span>💡 <em>Arrastra o usa las flechas ◀ ▶ para ver todas las columnas</em></span>
     </div>
   </section>
 
@@ -95,8 +104,16 @@
        MAIN APP CONTAINER: BOARD + PARKING LOT SIDEBAR
        ========================================================================== -->
   <main class="app-container">
+    <!-- Botones flotantes de desplazamiento horizontal -->
+    <button class="board-nav-btn btn-left" id="btn-board-scroll-left" title="Desplazar a la izquierda (Ver columnas anteriores)">
+      ◀
+    </button>
+    <button class="board-nav-btn btn-right" id="btn-board-scroll-right" title="Desplazar a la derecha (Ver más columnas)">
+      ▶
+    </button>
+
     <!-- Board Viewport with Columns -->
-    <div class="board-viewport">
+    <div class="board-viewport" id="board-viewport">
       <div class="columns-container" id="columns-container">
         <!-- Columns rendered dynamically -->
       </div>
@@ -140,25 +157,17 @@
         <h3>🚗 Bienvenido a Pop It EASY DRIVE</h3>
         <button class="modal-close-btn">&times;</button>
       </div>
-      <div class="modal-body">
-        <div style="display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 16px;">
-          <button id="tab-auth-login" class="btn" style="flex: 1; border-radius: 0; border-bottom: 2px solid var(--brand-primary); font-weight: 700;">
-            Iniciar Sesión
-          </button>
-          <button id="tab-auth-register" class="btn" style="flex: 1; border-radius: 0; color: var(--text-muted); font-weight: 700;">
-            Registrarme con mi GIF
-          </button>
-        </div>
-
-        <!-- Login View -->
         <div id="view-auth-login">
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+            Ingresa con tu usuario y PIN asignado para operar en el tablero:
+          </p>
           <form id="form-login">
             <div class="form-group" style="margin-bottom: 12px;">
               <label>Usuario (ej: admin, carlos, laura, diego):</label>
               <input type="text" id="login-username" class="form-control" placeholder="Nombre de usuario" required>
             </div>
             <div class="form-group" style="margin-bottom: 16px;">
-              <label>PIN o Contraseña (admin: admin123 | usuarios: 1234):</label>
+              <label>PIN o Contraseña:</label>
               <input type="password" id="login-pin" class="form-control" placeholder="••••" required>
             </div>
             <div id="login-error-msg" style="color: #ef4444; font-size: 0.8rem; margin-bottom: 12px; display: none;"></div>
@@ -166,46 +175,10 @@
               Entrar al Turno 🚗
             </button>
           </form>
-        </div>
 
-        <!-- Register View -->
-        <div id="view-auth-register" style="display: none;">
-          <form id="form-register">
-            <div class="form-group" style="margin-bottom: 12px;">
-              <label>Nombre de Usuario (para login):</label>
-              <input type="text" id="reg-username" class="form-control" placeholder="ej: marta_noche" required>
-            </div>
-            <div class="form-group" style="margin-bottom: 12px;">
-              <label>Nombre Completo / Apodo:</label>
-              <input type="text" id="reg-displayname" class="form-control" placeholder="ej: Marta González" required>
-            </div>
-            <div class="form-group" style="margin-bottom: 12px;">
-              <label>Tu Turno de Trabajo:</label>
-              <select id="reg-shift" class="form-control">
-                <option value="Turno Mañana">☀️ Turno Mañana (06:00 - 14:00)</option>
-                <option value="Turno Tarde">⛅ Turno Tarde (14:00 - 22:00)</option>
-                <option value="Turno Noche">🌙 Turno Noche (22:00 - 06:00)</option>
-                <option value="Turno General">🏢 Turno General / Oficina</option>
-              </select>
-            </div>
-            <div class="form-group" style="margin-bottom: 12px;">
-              <label>PIN de Acceso Rápido (4 dígitos):</label>
-              <input type="password" id="reg-pin" class="form-control" value="1234" required>
-            </div>
-
-            <!-- Choose Animated GIF Avatar -->
-            <div class="form-group" style="margin-bottom: 16px;">
-              <label>Elige tu GIF animado de trabajo para el Estacionamiento:</label>
-              <div class="gif-picker-grid" id="auth-gif-picker">
-                <!-- GIFs rendered dynamically -->
-              </div>
-            </div>
-
-            <div id="reg-error-msg" style="color: #ef4444; font-size: 0.8rem; margin-bottom: 12px; display: none;"></div>
-            <button type="submit" class="btn btn-accent" style="width: 100%;">
-              Crear Cuenta y Estacionarme 🅿️
-            </button>
-          </form>
+          <div style="margin-top: 18px; padding: 12px; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; font-size: 0.78rem; color: #94a3b8; text-align: center; line-height: 1.4;">
+            🔒 <strong>Acceso Restringido:</strong> Solo el Administrador puede crear nuevas cuentas y asignar turnos u operadores.
+          </div>
         </div>
       </div>
     </div>
@@ -389,6 +362,88 @@
         <button class="btn btn-secondary" id="btn-logout" style="width: 100%; color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">
           🚪 Cerrar Sesión / Salir del Estacionamiento
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 6: GESTIÓN DE USUARIOS (SOLO ADMINISTRADOR)
+       ========================================================================== -->
+  <div class="modal-backdrop" id="modal-manage-users">
+    <div class="modal-dialog" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3>👥 Gestión de Usuarios y Operadores</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 16px;">
+          <button id="tab-admin-create-user" class="btn" style="flex: 1; border-radius: 0; border-bottom: 2px solid var(--brand-primary); font-weight: 700;">
+            ➕ Crear Nuevo Usuario
+          </button>
+          <button id="tab-admin-list-users" class="btn" style="flex: 1; border-radius: 0; color: var(--text-muted); font-weight: 700;">
+            📋 Usuarios Registrados (<span id="admin-users-count">0</span>)
+          </button>
+        </div>
+
+        <!-- Panel 1: Crear Usuario -->
+        <div id="view-admin-create-user">
+          <form id="form-admin-create-user">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+              <div class="form-group">
+                <label>Nombre de Usuario (para login):</label>
+                <input type="text" id="admin-new-username" class="form-control" placeholder="ej: mario_tarde" required>
+              </div>
+              <div class="form-group">
+                <label>Nombre Completo / Apodo:</label>
+                <input type="text" id="admin-new-displayname" class="form-control" placeholder="ej: Mario Gómez" required>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+              <div class="form-group">
+                <label>Rol en el Sistema:</label>
+                <select id="admin-new-role" class="form-control">
+                  <option value="basic">Operador Básico (Ver, comentar, firmar)</option>
+                  <option value="admin">Administrador (Control total)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Turno Asignado:</label>
+                <select id="admin-new-shift" class="form-control">
+                  <option value="Turno Mañana">☀️ Turno Mañana (06:00 - 14:00)</option>
+                  <option value="Turno Tarde">⛅ Turno Tarde (14:00 - 22:00)</option>
+                  <option value="Turno Noche">🌙 Turno Noche (22:00 - 06:00)</option>
+                  <option value="Turno General">🏢 Turno General / Oficina</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label>PIN de Acceso (4 dígitos):</label>
+              <input type="text" id="admin-new-pin" class="form-control" value="1234" required>
+            </div>
+
+            <!-- Selector de GIF animado -->
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label>GIF animado de trabajo para el Estacionamiento:</label>
+              <div class="gif-picker-grid" id="admin-user-gif-picker" style="max-height: 140px; overflow-y: auto;">
+                <!-- GIFs renderizados dinámicamente -->
+              </div>
+            </div>
+
+            <div id="admin-user-error-msg" style="color: #ef4444; font-size: 0.8rem; margin-bottom: 12px; display: none;"></div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+              ✅ Crear Usuario y Guardar
+            </button>
+          </form>
+        </div>
+
+        <!-- Panel 2: Lista de Usuarios Registrados -->
+        <div id="view-admin-list-users" style="display: none;">
+          <div id="admin-users-list-container" style="display: flex; flex-direction: column; gap: 10px; max-height: 380px; overflow-y: auto; padding-right: 4px;">
+            <!-- Renderizado dinámico -->
+          </div>
+        </div>
       </div>
     </div>
   </div>
