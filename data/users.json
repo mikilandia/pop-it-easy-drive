@@ -1,0 +1,42 @@
+[
+  {
+    "id": "usr-admin",
+    "username": "admin",
+    "displayName": "Administrador Principal",
+    "role": "admin",
+    "pin": "admin123",
+    "shift": "Turno General",
+    "avatarGif": "https://media.giphy.com/media/krewXUB6LBja/giphy.gif",
+    "createdAt": "2026-09-01T08:00:00.000Z"
+  },
+  {
+    "id": "usr-carlos",
+    "username": "carlos",
+    "displayName": "Carlos Mendoza",
+    "role": "basic",
+    "pin": "1234",
+    "shift": "Turno Mañana",
+    "avatarGif": "https://media.giphy.com/media/unQ3IJU2RG7DO/giphy.gif",
+    "createdAt": "2026-09-15T07:00:00.000Z"
+  },
+  {
+    "id": "usr-laura",
+    "username": "laura",
+    "displayName": "Laura Torres",
+    "role": "basic",
+    "pin": "1234",
+    "shift": "Turno Tarde",
+    "avatarGif": "https://media.giphy.com/media/3o7btQ8jDTPGDpgRYc/giphy.gif",
+    "createdAt": "2026-09-15T15:00:00.000Z"
+  },
+  {
+    "id": "usr-diego",
+    "username": "diego",
+    "displayName": "Diego Navarro",
+    "role": "basic",
+    "pin": "1234",
+    "shift": "Turno Noche",
+    "avatarGif": "https://media.giphy.com/media/YQitE4YNQNahy/giphy.gif",
+    "createdAt": "2026-09-15T23:00:00.000Z"
+  }
+]

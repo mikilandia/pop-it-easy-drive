@@ -1,0 +1,86 @@
+[
+  {
+    "id": "gif-bongo-cat",
+    "name": "Gato Tecleando Rápido",
+    "url": "https://media.giphy.com/media/unQ3IJU2RG7DO/giphy.gif",
+    "category": "oficina",
+    "tags": ["gato", "teclado", "rapido"]
+  },
+  {
+    "id": "gif-hamster-coffee",
+    "name": "Hamster Ejecutivo con Café",
+    "url": "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif",
+    "category": "oficina",
+    "tags": ["hamster", "cafe", "trabajo"]
+  },
+  {
+    "id": "gif-dog-laptop",
+    "name": "Perrito Concentrado en PC",
+    "url": "https://media.giphy.com/media/mCRJDo24UvJMA/giphy.gif",
+    "category": "oficina",
+    "tags": ["perro", "computadora", "atento"]
+  },
+  {
+    "id": "gif-fast-driver",
+    "name": "Conductor Easy Drive",
+    "url": "https://media.giphy.com/media/3o7btQ8jDTPGDpgRYc/giphy.gif",
+    "category": "drive",
+    "tags": ["auto", "volante", "velocidad", "easy drive"]
+  },
+  {
+    "id": "gif-cyber-worker",
+    "name": "Robot de Soporte Técnico",
+    "url": "https://media.giphy.com/media/ule4vhcY1xEKQ/giphy.gif",
+    "category": "tecnologia",
+    "tags": ["robot", "futuro", "soporte"]
+  },
+  {
+    "id": "gif-busy-coffee",
+    "name": "Café Doble Modo Turbo",
+    "url": "https://media.giphy.com/media/o75ajIFH0QnQC3nCeD/giphy.gif",
+    "category": "energia",
+    "tags": ["cafe", "activo", "turbo"]
+  },
+  {
+    "id": "gif-detective",
+    "name": "Inspector de Calidad",
+    "url": "https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif",
+    "category": "calidad",
+    "tags": ["inspector", "lupa", "detalle"]
+  },
+  {
+    "id": "gif-hacker-green",
+    "name": "Operador en Consola",
+    "url": "https://media.giphy.com/media/YQitE4YNQNahy/giphy.gif",
+    "category": "sistemas",
+    "tags": ["hacker", "pantalla", "datos"]
+  },
+  {
+    "id": "gif-duck-boss",
+    "name": "Pato Supervisor de Turno",
+    "url": "https://media.giphy.com/media/krewXUB6LBja/giphy.gif",
+    "category": "liderazgo",
+    "tags": ["pato", "jefe", "supervisor"]
+  },
+  {
+    "id": "gif-sloth-chill",
+    "name": "Perezoso Modo Zen",
+    "url": "https://media.giphy.com/media/l2JHRhAtnJSDNJ2py/giphy.gif",
+    "category": "relax",
+    "tags": ["perezoso", "calma", "seguro"]
+  },
+  {
+    "id": "gif-racing-car",
+    "name": "Coche de Carrera Easy Drive",
+    "url": "https://media.giphy.com/media/xT5LMGfQrJPpHXdsEQ/giphy.gif",
+    "category": "drive",
+    "tags": ["coche", "pista", "ruta"]
+  },
+  {
+    "id": "gif-panda-typing",
+    "name": "Panda Escribiendo Reportes",
+    "url": "https://media.giphy.com/media/l0HlTy9x8FxBtVCAE/giphy.gif",
+    "category": "oficina",
+    "tags": ["panda", "reporte", "escribiendo"]
+  }
+]

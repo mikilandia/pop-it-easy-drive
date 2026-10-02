@@ -1,0 +1,129 @@
+[
+  {
+    "id": "pop-101",
+    "title": "🚨 URGENTE: Desvío en Sensor de Presión Línea 2",
+    "content": "Se detectó fluctuación en el sensor de presión del sector de inflado. Favor de verificar antes de dar salida a los vehículos de Easy Drive. Turno Tarde debe reportar a mantenimiento.",
+    "color": "red",
+    "category": "col-urgente",
+    "author": "Administrador Principal",
+    "authorAvatar": "https://media.giphy.com/media/krewXUB6LBja/giphy.gif",
+    "authorRole": "admin",
+    "priority": "alta",
+    "createdAt": "2026-10-01T20:00:00.000Z",
+    "updatedAt": "2026-10-02T06:30:00.000Z",
+    "lastModifiedBy": "Administrador Principal",
+    "lastModifiedShift": "Turno Mañana",
+    "changeSummary": "Se agregó la indicación de parada preventiva hasta las 11:00 AM.",
+    "pinned": true,
+    "signatures": [
+      {
+        "user": "Carlos Mendoza",
+        "shift": "Turno Mañana",
+        "time": "2026-10-02T07:15:00.000Z",
+        "avatar": "https://media.giphy.com/media/unQ3IJU2RG7DO/giphy.gif"
+      }
+    ],
+    "comments": [
+      {
+        "id": "c-1",
+        "author": "Carlos Mendoza",
+        "shift": "Turno Mañana",
+        "avatar": "https://media.giphy.com/media/unQ3IJU2RG7DO/giphy.gif",
+        "text": "Recibido. Estamos usando el manómetro manual de respaldo mientras llega el técnico.",
+        "createdAt": "2026-10-02T07:16:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "pop-102",
+    "title": "📋 Procedimiento Nuevo de Relevo Digital",
+    "content": "A partir de hoy, todos los turnos deben registrar las novedades aquí en Pop It EASY DRIVE. Revisar siempre los Pop It que tengan el resplandor encendido.",
+    "color": "green",
+    "category": "col-general",
+    "author": "Administrador Principal",
+    "authorAvatar": "https://media.giphy.com/media/krewXUB6LBja/giphy.gif",
+    "authorRole": "admin",
+    "priority": "normal",
+    "createdAt": "2026-10-01T15:00:00.000Z",
+    "updatedAt": "2026-10-02T05:00:00.000Z",
+    "lastModifiedBy": "Administrador Principal",
+    "lastModifiedShift": "Turno General",
+    "changeSummary": "Se detallaron las instrucciones del estacionamiento de turnos.",
+    "pinned": false,
+    "signatures": [
+      {
+        "user": "Laura Torres",
+        "shift": "Turno Tarde",
+        "time": "2026-10-02T05:40:00.000Z",
+        "avatar": "https://media.giphy.com/media/3o7btQ8jDTPGDpgRYc/giphy.gif"
+      }
+    ],
+    "comments": [
+      {
+        "id": "c-2",
+        "author": "Laura Torres",
+        "shift": "Turno Tarde",
+        "avatar": "https://media.giphy.com/media/3o7btQ8jDTPGDpgRYc/giphy.gif",
+        "text": "Excelente sistema, ya elegí mi avatar de auto rápido!",
+        "createdAt": "2026-10-02T05:41:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "pop-103",
+    "title": "⚠️ Aviso: Reabastecimiento de Precintos y Etiquetas",
+    "content": "Quedan solo 2 cajas de precintos de seguridad en el estante 4. Se realizó pedido al proveedor para reposición.",
+    "color": "yellow",
+    "category": "col-manana",
+    "author": "Administrador Principal",
+    "authorAvatar": "https://media.giphy.com/media/krewXUB6LBja/giphy.gif",
+    "authorRole": "admin",
+    "priority": "media",
+    "createdAt": "2026-09-29T10:00:00.000Z",
+    "updatedAt": "2026-09-30T10:00:00.000Z",
+    "lastModifiedBy": "Administrador Principal",
+    "lastModifiedShift": "Turno Mañana",
+    "changeSummary": "",
+    "pinned": false,
+    "signatures": [],
+    "comments": []
+  },
+  {
+    "id": "pop-104",
+    "title": "🔍 Auditoría de Calidad Interna Turno Tarde",
+    "content": "Revisar las hojas de ruta y confirmar que todos los registros de salida cuenten con la doble firma del supervisor.",
+    "color": "blue",
+    "category": "col-tarde",
+    "author": "Administrador Principal",
+    "authorAvatar": "https://media.giphy.com/media/krewXUB6LBja/giphy.gif",
+    "authorRole": "admin",
+    "priority": "normal",
+    "createdAt": "2026-10-01T22:00:00.000Z",
+    "updatedAt": "2026-10-02T07:45:00.000Z",
+    "lastModifiedBy": "Administrador Principal",
+    "lastModifiedShift": "Turno Tarde",
+    "changeSummary": "Actualizado el checklist de control según norma ISO.",
+    "pinned": false,
+    "signatures": [],
+    "comments": []
+  },
+  {
+    "id": "pop-105",
+    "title": "🌙 Llaves del Pañol y Depósito de Herramientas",
+    "content": "Las llaves del pañol de guardia quedan resguardadas en el casillero 12 con código temporal 8844.",
+    "color": "purple",
+    "category": "col-noche",
+    "author": "Administrador Principal",
+    "authorAvatar": "https://media.giphy.com/media/krewXUB6LBja/giphy.gif",
+    "authorRole": "admin",
+    "priority": "normal",
+    "createdAt": "2026-09-28T04:00:00.000Z",
+    "updatedAt": "2026-09-28T04:00:00.000Z",
+    "lastModifiedBy": "Administrador Principal",
+    "lastModifiedShift": "Turno Noche",
+    "changeSummary": "",
+    "pinned": false,
+    "signatures": [],
+    "comments": []
+  }
+]

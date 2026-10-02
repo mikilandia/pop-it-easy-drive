@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pop It EASY DRIVE - Tablero de Turnos y Comunicación Operativa</title>
+  <meta name="description" content="Tablero interactivo tipo oficina con Pop It de colores, resplandor de 24 horas para cambios de turno, estacionamiento de usuarios conectados en vivo y avatares GIF animados.">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚗</text></svg>">
+</head>
+<body>
+  <div class="board-background"></div>
+
+  <!-- ==========================================================================
+       TOP NAVIGATION BAR
+       ========================================================================== -->
+  <header class="top-navbar">
+    <div class="brand-section">
+      <div class="brand-logo-icon">🚗</div>
+      <div class="brand-text">
+        <h1>Pop It <span class="badge-drive">EASY DRIVE</span></h1>
+      </div>
+      <div class="shift-current-badge">
+        <span class="indicator-dot"></span>
+        <span id="current-shift-name">Turno en Curso</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <!-- Admin Action Buttons -->
+      <button class="btn btn-primary admin-only" id="btn-new-popit" style="display: none;">
+        <span>➕</span> Nuevo Pop It
+      </button>
+
+      <button class="btn btn-secondary admin-only" id="btn-manage-gifs" style="display: none;">
+        <span>🖼️</span> Galería de GIFs
+      </button>
+
+      <!-- Network / Invite Colleagues Button -->
+      <button class="btn btn-secondary" id="btn-invite-colleagues" title="Compartir enlace para compañeros en red">
+        <span>🌐</span> Conectar Compañeros
+      </button>
+
+      <!-- Audio Mute Toggle -->
+      <button class="btn-icon" id="btn-toggle-sound" title="Sonido de timbre y llegadas">
+        🔔
+      </button>
+
+      <!-- Board Texture Theme Toggle (Cork / Dark Carbon) -->
+      <button class="btn-icon" id="btn-toggle-theme" title="Cambiar fondo de tablero (Corcho / Carbón)">
+        🏁
+      </button>
+
+      <!-- User Profile Menu Trigger -->
+      <div class="user-profile-btn" id="user-profile-trigger">
+        <span style="font-size: 1.2rem;">👤</span>
+        <span class="user-name-label">Ingresar</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       SUBHEADER: SEARCH & QUICK FILTERS
+       ========================================================================== -->
+  <section class="filter-bar">
+    <div class="filter-left">
+      <div class="search-input-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="board-search-input" placeholder="Buscar por título, contenido o autor...">
+      </div>
+
+      <!-- 24-Hour Resplandor Filter Button -->
+      <button class="btn-glow-filter" id="btn-glow-filter" title="Filtrar notas que fueron modificadas en las últimas 24 horas">
+        <span>⚡ Novedades de Turno</span>
+        <span style="background: rgba(0,0,0,0.25); padding: 2px 7px; border-radius: 10px; font-size: 0.72rem;" id="glow-count-badge">0</span>
+      </button>
+
+      <!-- Color Filter Pills -->
+      <div class="color-pills" title="Filtrar por tipo de Pop It">
+        <div class="color-pill active" data-color="all" title="Ver todos"></div>
+        <div class="color-pill" data-color="green" title="Verde: Informativo / General"></div>
+        <div class="color-pill" data-color="red" title="Rojo: Urgente / Alerta"></div>
+        <div class="color-pill" data-color="yellow" title="Amarillo: Precaución / Pendientes"></div>
+        <div class="color-pill" data-color="blue" title="Azul: Procedimiento / Calidad"></div>
+        <div class="color-pill" data-color="purple" title="Morado: Relevo de Turno"></div>
+      </div>
+    </div>
+
+    <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+      <span>💡 <em>Los Pop It modificados resplandecen por 24 horas completas</em></span>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       MAIN APP CONTAINER: BOARD + PARKING LOT SIDEBAR
+       ========================================================================== -->
+  <main class="app-container">
+    <!-- Board Viewport with Columns -->
+    <div class="board-viewport">
+      <div class="columns-container" id="columns-container">
+        <!-- Columns rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- Estacionamiento de Turnos (Shift Parking Lot) -->
+    <aside class="parking-lot-sidebar" id="parking-sidebar">
+      <div class="parking-header">
+        <div class="parking-title">
+          <h2>
+            <span>🚗</span> Estacionamiento
+            <span class="parking-badge">EASY DRIVE</span>
+          </h2>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 0.75rem; font-weight: 700; color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 10px;">
+            <span id="parking-online-count">0</span> en línea
+          </span>
+          <button class="parking-toggle-btn" id="parking-toggle-btn" title="Contraer/Expandir Estacionamiento">▶</button>
+        </div>
+      </div>
+
+      <!-- Road / Bays Container -->
+      <div class="parking-bays-scroll" id="parking-bays-scroll">
+        <!-- Parking slots rendered dynamically -->
+      </div>
+    </aside>
+  </main>
+
+  <!-- ==========================================================================
+       TOAST NOTIFICATIONS CONTAINER (Arrival Chimes & Alerts)
+       ========================================================================== -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ==========================================================================
+       MODAL 1: AUTHENTICATION (LOGIN & REGISTRATION WITH GIF SELECTOR)
+       ========================================================================== -->
+  <div class="modal-backdrop" id="modal-auth">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>🚗 Bienvenido a Pop It EASY DRIVE</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 16px;">
+          <button id="tab-auth-login" class="btn" style="flex: 1; border-radius: 0; border-bottom: 2px solid var(--brand-primary); font-weight: 700;">
+            Iniciar Sesión
+          </button>
+          <button id="tab-auth-register" class="btn" style="flex: 1; border-radius: 0; color: var(--text-muted); font-weight: 700;">
+            Registrarme con mi GIF
+          </button>
+        </div>
+
+        <!-- Login View -->
+        <div id="view-auth-login">
+          <form id="form-login">
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label>Usuario (ej: admin, carlos, laura, diego):</label>
+              <input type="text" id="login-username" class="form-control" placeholder="Nombre de usuario" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label>PIN o Contraseña (admin: admin123 | usuarios: 1234):</label>
+              <input type="password" id="login-pin" class="form-control" placeholder="••••" required>
+            </div>
+            <div id="login-error-msg" style="color: #ef4444; font-size: 0.8rem; margin-bottom: 12px; display: none;"></div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+              Entrar al Turno 🚗
+            </button>
+          </form>
+        </div>
+
+        <!-- Register View -->
+        <div id="view-auth-register" style="display: none;">
+          <form id="form-register">
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label>Nombre de Usuario (para login):</label>
+              <input type="text" id="reg-username" class="form-control" placeholder="ej: marta_noche" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label>Nombre Completo / Apodo:</label>
+              <input type="text" id="reg-displayname" class="form-control" placeholder="ej: Marta González" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label>Tu Turno de Trabajo:</label>
+              <select id="reg-shift" class="form-control">
+                <option value="Turno Mañana">☀️ Turno Mañana (06:00 - 14:00)</option>
+                <option value="Turno Tarde">⛅ Turno Tarde (14:00 - 22:00)</option>
+                <option value="Turno Noche">🌙 Turno Noche (22:00 - 06:00)</option>
+                <option value="Turno General">🏢 Turno General / Oficina</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label>PIN de Acceso Rápido (4 dígitos):</label>
+              <input type="password" id="reg-pin" class="form-control" value="1234" required>
+            </div>
+
+            <!-- Choose Animated GIF Avatar -->
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label>Elige tu GIF animado de trabajo para el Estacionamiento:</label>
+              <div class="gif-picker-grid" id="auth-gif-picker">
+                <!-- GIFs rendered dynamically -->
+              </div>
+            </div>
+
+            <div id="reg-error-msg" style="color: #ef4444; font-size: 0.8rem; margin-bottom: 12px; display: none;"></div>
+            <button type="submit" class="btn btn-accent" style="width: 100%;">
+              Crear Cuenta y Estacionarme 🅿️
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 2: POP IT EDITOR (CREATE / EDIT BY ADMIN)
+       ========================================================================== -->
+  <div class="modal-backdrop" id="modal-popit-editor">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-popit-form-title">➕ Nuevo Pop It</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="popit-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Título del Pop It:</label>
+            <input type="text" id="popit-title" class="form-control" placeholder="ej: 🚨 Atención: Nueva instrucción de despacho" required>
+          </div>
+
+          <div class="form-group">
+            <label>Tablero / Columna:</label>
+            <select id="popit-category" class="form-control" required></select>
+          </div>
+
+          <!-- Color options with meaning -->
+          <div class="form-group">
+            <label>Color y Propósito del Pop It:</label>
+            <div class="form-color-options">
+              <label>
+                <input type="radio" name="popit-color" value="green" class="form-color-radio" checked>
+                <div class="form-color-label green">🟢 Verde<br><small>Informativo</small></div>
+              </label>
+              <label>
+                <input type="radio" name="popit-color" value="red" class="form-color-radio">
+                <div class="form-color-label red">🚨 Rojo<br><small>Urgente</small></div>
+              </label>
+              <label>
+                <input type="radio" name="popit-color" value="yellow" class="form-color-radio">
+                <div class="form-color-label yellow">⚠️ Amarillo<br><small>Pendiente</small></div>
+              </label>
+              <label>
+                <input type="radio" name="popit-color" value="blue" class="form-color-radio">
+                <div class="form-color-label blue">🔍 Azul<br><small>Calidad</small></div>
+              </label>
+              <label>
+                <input type="radio" name="popit-color" value="purple" class="form-color-radio">
+                <div class="form-color-label purple">🌙 Morado<br><small>Turnos</small></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Contenido del mensaje / instrucciones:</label>
+            <textarea id="popit-content" class="form-control" rows="4" placeholder="Escribe aquí todas las indicaciones claras para los turnos..." required></textarea>
+          </div>
+
+          <!-- Change summary (Trigger for the 24h Glow!) -->
+          <div class="form-group" id="popit-change-group" style="display: none;">
+            <label style="color: #f59e0b; font-weight: 700;">⚡ ¿Qué cambiaste? (Se mostrará a todos los turnos durante 24 horas):</label>
+            <input type="text" id="popit-change-summary" class="form-control" placeholder="ej: Se cambió la fecha límite y se agregó el nuevo código de acceso.">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-close-btn">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar y Publicar 📌</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 3: POP IT DETAIL & COMMENTS (VIEW, 24H GLOW DETAILS, SIGNATURES)
+       ========================================================================== -->
+  <div class="modal-backdrop" id="modal-popit-detail">
+    <div class="modal-dialog" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3>📌 Detalle del Pop It</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body" id="popit-detail-content">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 4: GIF MANAGER (ADMIN ONLY: UPLOAD OR LINK GIFS)
+       ========================================================================== -->
+  <div class="modal-backdrop" id="modal-gif-manager">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>🖼️ Galería y Gestión de GIFs de Perfil</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Como administrador, puedes subir archivos GIF desde tu computadora o pegar enlaces de Internet (Giphy, Tenor, etc.) para que todos los usuarios puedan elegirlos en su perfil.
+        </p>
+
+        <!-- Subir archivo GIF -->
+        <form id="form-upload-gif" style="background: var(--bg-dark); padding: 14px; border-radius: 10px; border: 1px solid var(--border-color);">
+          <h4 style="font-size: 0.9rem; margin-bottom: 8px;">📂 Subir GIF desde tu computadora:</h4>
+          <div class="form-group" style="margin-bottom: 8px;">
+            <input type="file" id="input-gif-file" accept=".gif,.webp,.png,.jpg,.jpeg" class="form-control" required>
+          </div>
+          <div class="form-group" style="margin-bottom: 10px;">
+            <input type="text" id="input-gif-name" class="form-control" placeholder="Nombre descriptivo (ej: Mecánico en acción)">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Subir Archivo a la Galería</button>
+        </form>
+
+        <!-- Enlazar por URL -->
+        <form id="form-add-gif-url" style="background: var(--bg-dark); padding: 14px; border-radius: 10px; border: 1px solid var(--border-color); margin-top: 12px;">
+          <h4 style="font-size: 0.9rem; margin-bottom: 8px;">🌐 Agregar GIF por URL de Internet:</h4>
+          <div class="form-group" style="margin-bottom: 8px;">
+            <input type="url" id="input-gif-url" class="form-control" placeholder="https://media.giphy.com/.../giphy.gif" required>
+          </div>
+          <div class="form-group" style="margin-bottom: 10px;">
+            <input type="text" id="input-gif-url-name" class="form-control" placeholder="Nombre del GIF">
+          </div>
+          <button type="submit" class="btn btn-secondary" style="width: 100%;">Registrar Enlace</button>
+        </form>
+
+        <h4 style="font-size: 0.9rem; margin-top: 16px; margin-bottom: 8px;">GIFs disponibles actualmente:</h4>
+        <div class="gif-picker-grid" id="admin-gif-manager-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 5: INVITE COLLEAGUES / ONLINE LAN CONNECTION
+       ========================================================================== -->
+  <div class="modal-backdrop" id="modal-invite">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>🌐 Conectar Compañeros al Tablero</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.9rem; line-height: 1.4; color: var(--text-main);">
+          ¡Comparte este enlace con tus compañeros en la misma red Wi-Fi o red de oficina para que se conecten, elijan su GIF y aparezcan trabajando en el Estacionamiento!
+        </p>
+
+        <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 10px;" id="network-addresses-list">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 14px; margin-top: 14px;">
+          <h4 style="font-size: 0.85rem; color: #38bdf8; margin-bottom: 4px;">🚀 Conexión en Tiempo Real</h4>
+          <p style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.4;">
+            Cualquier cambio, nuevo Pop It, comentario o usuario que se conecte se sincroniza en vivo de inmediato en todas las pantallas sin necesidad de recargar la página.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 6: USER STATUS & PROFILE MENU
+       ========================================================================== -->
+  <div class="modal-backdrop" id="modal-user-menu">
+    <div class="modal-dialog" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3>👤 Mi Estado de Turno</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label>Estado en el Estacionamiento:</label>
+          <select id="select-my-status" class="form-control">
+            <option value="Trabajando en el tablero 📝">Trabajando en el tablero 📝</option>
+            <option value="En pausa café ☕">En pausa café ☕</option>
+            <option value="En revisión de línea 🔍">En revisión de línea 🔍</option>
+            <option value="En relevo de guardia 🚗">En relevo de guardia 🚗</option>
+            <option value="Atendiendo urgencia 🚨">Atendiendo urgencia 🚨</option>
+          </select>
+        </div>
+
+        <button class="btn btn-secondary" id="btn-logout" style="width: 100%; color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">
+          🚪 Cerrar Sesión / Salir del Estacionamiento
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/audio.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

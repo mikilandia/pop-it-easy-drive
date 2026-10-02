@@ -1,0 +1,32 @@
+[
+  {
+    "id": "col-general",
+    "title": "📌 Tablero General / Novedades",
+    "color": "#3b82f6",
+    "description": "Comunicaciones generales de la empresa y avisos globales"
+  },
+  {
+    "id": "col-urgente",
+    "title": "🚨 Urgencias & Seguridad Crítica",
+    "color": "#ef4444",
+    "description": "Atención inmediata requerida por todos los turnos"
+  },
+  {
+    "id": "col-manana",
+    "title": "☀️ Turno Mañana (06:00 - 14:00)",
+    "color": "#10b981",
+    "description": "Relevo, tareas y pendientes de la mañana"
+  },
+  {
+    "id": "col-tarde",
+    "title": "⛅ Turno Tarde (14:00 - 22:00)",
+    "color": "#f59e0b",
+    "description": "Operaciones, entregas y avances de la tarde"
+  },
+  {
+    "id": "col-noche",
+    "title": "🌙 Turno Noche (22:00 - 06:00)",
+    "color": "#8b5cf6",
+    "description": "Mantenimiento, cierre de guardia e informes"
+  }
+]

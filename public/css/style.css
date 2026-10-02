@@ -1,0 +1,1266 @@
+/* ==========================================================================
+   POP IT EASY DRIVE - TABLERO DIGITAL DE OFICINA & ESTACIONAMIENTO DE TURNOS
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Colors */
+  --bg-dark: #0f141c;
+  --bg-surface: #18202d;
+  --bg-surface-elevated: #222d3d;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-highlight: rgba(255, 255, 255, 0.16);
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+
+  /* Brand Easy Drive */
+  --brand-primary: #38bdf8;
+  --brand-secondary: #f59e0b;
+  --brand-accent: #10b981;
+
+  /* Pop It Color Palette */
+  --pop-green-bg: #ecfdf5;
+  --pop-green-border: #10b981;
+  --pop-green-text: #064e3b;
+  --pop-green-tag: #059669;
+
+  --pop-red-bg: #fef2f2;
+  --pop-red-border: #ef4444;
+  --pop-red-text: #7f1d1d;
+  --pop-red-tag: #dc2626;
+
+  --pop-yellow-bg: #fffbeb;
+  --pop-yellow-border: #f59e0b;
+  --pop-yellow-text: #78350f;
+  --pop-yellow-tag: #d97706;
+
+  --pop-blue-bg: #eff6ff;
+  --pop-blue-border: #3b82f6;
+  --pop-blue-text: #1e3a8a;
+  --pop-blue-tag: #2563eb;
+
+  --pop-purple-bg: #faf5ff;
+  --pop-purple-border: #a855f7;
+  --pop-purple-text: #581c87;
+  --pop-purple-tag: #9333ea;
+
+  --pop-orange-bg: #fff7ed;
+  --pop-orange-border: #f97316;
+  --pop-orange-text: #7c2d12;
+  --pop-orange-tag: #ea580c;
+
+  /* Glow Animation Colors */
+  --glow-gold: #f59e0b;
+  --glow-neon: #38bdf8;
+  --glow-shadow: 0 0 24px rgba(245, 158, 11, 0.65), 0 0 45px rgba(239, 68, 68, 0.35);
+
+  --sidebar-width: 340px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Background Texture Options (Cork & Carbon) */
+.board-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background-color: #121824;
+  background-image: 
+    radial-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+    radial-gradient(rgba(245, 158, 11, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: 0 0, 14px 14px;
+}
+
+body.theme-cork .board-background {
+  background-color: #261c14;
+  background-image: 
+    radial-gradient(#3a291b 15%, transparent 16%),
+    radial-gradient(#1f150f 15%, transparent 16%);
+  background-size: 32px 32px;
+  background-position: 0 0, 16px 16px;
+}
+
+/* ==========================================================================
+   HEADER & TOP NAVBAR
+   ========================================================================== */
+
+.top-navbar {
+  height: 72px;
+  background: rgba(18, 24, 36, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-logo-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+  animation: logoFloat 4s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.brand-text h1 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, #38bdf8, #f8fafc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-text .badge-drive {
+  background: #f59e0b;
+  color: #0f141c;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.shift-current-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  padding: 5px 12px;
+  border-radius: 20px;
+  color: #94a3b8;
+}
+
+.shift-current-badge .indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Buttons */
+.btn {
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0284c7, #0ea5e9);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0369a1, #0284c7);
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.5);
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+}
+
+.btn-accent:hover {
+  filter: brightness(1.1);
+}
+
+.btn-secondary {
+  background: var(--bg-surface);
+  color: var(--text-main);
+  border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-surface-elevated);
+  border-color: var(--border-highlight);
+}
+
+.btn-icon {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1.1rem;
+}
+
+.btn-icon:hover {
+  background: var(--bg-surface-elevated);
+  border-color: var(--brand-primary);
+}
+
+/* User Profile Badge */
+.user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  padding: 4px 12px 4px 4px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.user-profile-btn:hover {
+  border-color: var(--brand-primary);
+  background: var(--bg-surface-elevated);
+}
+
+.user-avatar-mini {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--brand-primary);
+}
+
+.user-name-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.user-role-badge.admin {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+/* ==========================================================================
+   SUBHEADER: FILTER & CONTROL BAR
+   ========================================================================== */
+
+.filter-bar {
+  background: rgba(18, 24, 36, 0.6);
+  border-bottom: 1px solid var(--border-color);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 260px;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px 0 34px;
+  border-radius: 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+}
+
+.search-input-wrapper input:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+}
+
+.search-input-wrapper .search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* 24h Glow Filter Highlight Button */
+.btn-glow-filter {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(239, 68, 68, 0.15));
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #fbbf24;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  animation: glowPulseSoft 3s infinite ease-in-out;
+}
+
+.btn-glow-filter.active {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: #ffffff;
+  border-color: #f59e0b;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+}
+
+@keyframes glowPulseSoft {
+  0%, 100% { box-shadow: 0 0 5px rgba(245, 158, 11, 0.2); }
+  50% { box-shadow: 0 0 14px rgba(245, 158, 11, 0.45); }
+}
+
+.color-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.color-pill {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.color-pill:hover {
+  transform: scale(1.15);
+}
+
+.color-pill.active {
+  border-color: #ffffff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.color-pill[data-color="all"] {
+  background: linear-gradient(135deg, #10b981 0%, #3b82f6 50%, #ef4444 100%);
+}
+.color-pill[data-color="green"] { background-color: var(--pop-green-border); }
+.color-pill[data-color="red"] { background-color: var(--pop-red-border); }
+.color-pill[data-color="yellow"] { background-color: var(--pop-yellow-border); }
+.color-pill[data-color="blue"] { background-color: var(--pop-blue-border); }
+.color-pill[data-color="purple"] { background-color: var(--pop-purple-border); }
+
+/* ==========================================================================
+   MAIN LAYOUT (BOARD + PARKING LOT)
+   ========================================================================== */
+
+.app-container {
+  display: flex;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.board-viewport {
+  flex: 1;
+  padding: 24px;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.columns-container {
+  display: flex;
+  gap: 22px;
+  align-items: flex-start;
+  min-width: min-content;
+}
+
+/* Column Design */
+.board-column {
+  width: 330px;
+  flex-shrink: 0;
+  background: rgba(24, 32, 45, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 180px);
+}
+
+.column-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.column-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.column-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.column-count-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--bg-surface-elevated);
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.cards-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+/* ==========================================================================
+   POP IT NOTE CARDS (TACTILE & REALISTIC CORK PIN LOOK)
+   ========================================================================== */
+
+.popit-card {
+  position: relative;
+  border-radius: 12px;
+  padding: 18px 16px 14px 16px;
+  color: #1e293b;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.popit-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* Subtle Realistic Pin at top center */
+.popit-pin {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #f87171, #991b1b);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  z-index: 5;
+}
+
+/* Pin variation for different colors */
+.popit-card.color-green .popit-pin { background: radial-gradient(circle at 35% 35%, #34d399, #065f46); }
+.popit-card.color-red .popit-pin { background: radial-gradient(circle at 35% 35%, #f87171, #991b1b); }
+.popit-card.color-yellow .popit-pin { background: radial-gradient(circle at 35% 35%, #fbbf24, #92400e); }
+.popit-card.color-blue .popit-pin { background: radial-gradient(circle at 35% 35%, #60a5fa, #1e40af); }
+.popit-card.color-purple .popit-pin { background: radial-gradient(circle at 35% 35%, #c084fc, #6b21a8); }
+
+/* Color Themes for Pop Its */
+.popit-card.color-green {
+  background: var(--pop-green-bg);
+  border-left: 5px solid var(--pop-green-border);
+  color: var(--pop-green-text);
+}
+
+.popit-card.color-red {
+  background: var(--pop-red-bg);
+  border-left: 5px solid var(--pop-red-border);
+  color: var(--pop-red-text);
+}
+
+.popit-card.color-yellow {
+  background: var(--pop-yellow-bg);
+  border-left: 5px solid var(--pop-yellow-border);
+  color: var(--pop-yellow-text);
+}
+
+.popit-card.color-blue {
+  background: var(--pop-blue-bg);
+  border-left: 5px solid var(--pop-blue-border);
+  color: var(--pop-blue-text);
+}
+
+.popit-card.color-purple {
+  background: var(--pop-purple-bg);
+  border-left: 5px solid var(--pop-purple-border);
+  color: var(--pop-purple-text);
+}
+
+.popit-card.color-orange {
+  background: var(--pop-orange-bg);
+  border-left: 5px solid var(--pop-orange-border);
+  color: var(--pop-orange-text);
+}
+
+/* ==========================================================================
+   24-HOUR RESPLANDOR (GLOW EFFECT)
+   "si se modifica alguno que tenga un resplandor por un dia entero para que todos los turno vean que cambio hay"
+   ========================================================================== */
+
+.popit-card.popit-glowing {
+  animation: card24hPulse 2.4s infinite ease-in-out;
+  border-color: #f59e0b;
+  outline: 2px solid rgba(245, 158, 11, 0.6);
+  z-index: 10;
+}
+
+@keyframes card24hPulse {
+  0% {
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.7), 0 0 30px rgba(239, 68, 68, 0.35), inset 0 0 8px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 28px rgba(245, 158, 11, 0.95), 0 0 50px rgba(239, 68, 68, 0.6), inset 0 0 14px rgba(255, 255, 255, 0.85);
+  }
+  100% {
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.7), 0 0 30px rgba(239, 68, 68, 0.35), inset 0 0 8px rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* Glowing Top Banner */
+.glow-badge-banner {
+  background: linear-gradient(90deg, #b45309, #dc2626);
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -6px;
+  margin-bottom: 4px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.glow-badge-banner .glow-icon {
+  animation: glowSparkle 1.2s infinite alternate;
+}
+
+@keyframes glowSparkle {
+  from { opacity: 0.7; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1.15); }
+}
+
+.glow-timer-remaining {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* Card Content Elements */
+.popit-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.popit-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.popit-body {
+  font-size: 0.85rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Modification Alert Box inside card */
+.popit-change-box {
+  background: rgba(0, 0, 0, 0.05);
+  border-left: 3px solid #f59e0b;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.popit-change-box .change-title {
+  font-weight: 700;
+  color: #b45309;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.popit-footer {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+}
+
+.popit-author {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.popit-author img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.popit-interactions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-comment-count, .badge-sign-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.06);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   ESTACIONAMIENTO DE TURNOS (PARKING LOT SIDEBAR)
+   "que los usuarios conectados se vean a un lado de la pantalla como que tengan un estacionamineto"
+   ========================================================================== */
+
+.parking-lot-sidebar {
+  width: var(--sidebar-width);
+  background: #111722;
+  border-left: 2px solid #2b3548;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 90;
+  transition: transform 0.3s ease;
+}
+
+.parking-lot-sidebar.collapsed {
+  transform: translateX(calc(var(--sidebar-width) - 48px));
+}
+
+.parking-header {
+  padding: 16px;
+  background: #18202d;
+  border-bottom: 2px solid #f59e0b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.parking-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.parking-title h2 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.parking-title .parking-badge {
+  background: #f59e0b;
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.parking-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+/* Asphalt Road Texture for Parking Bays */
+.parking-bays-scroll {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      #131a24,
+      #131a24 24px,
+      #17202d 24px,
+      #17202d 48px
+    );
+}
+
+.parking-slot {
+  position: relative;
+  background: rgba(24, 32, 45, 0.9);
+  border: 2px dashed rgba(245, 158, 11, 0.4);
+  border-radius: 12px;
+  padding: 12px;
+  transition: all 0.2s;
+}
+
+.parking-slot.occupied {
+  border: 2px solid rgba(56, 189, 248, 0.4);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.parking-slot.occupied:hover {
+  border-color: var(--brand-primary);
+  transform: translateX(-4px);
+}
+
+.slot-number {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #f59e0b;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* User Car / Working Box */
+.parked-user-card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.parked-gif-container {
+  width: 58px;
+  height: 58px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  border: 2px solid var(--brand-primary);
+  position: relative;
+  flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+.parked-gif-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.online-pulse-indicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #10b981;
+  border: 2px solid #000;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulseGreen 1.5s infinite;
+}
+
+@keyframes pulseGreen {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.parked-user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+}
+
+.parked-user-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.parked-user-shift {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--brand-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.parked-user-status {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  width: fit-content;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Empty parking spot */
+.empty-parking-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  color: var(--text-dim);
+  text-align: center;
+  gap: 4px;
+}
+
+.empty-parking-slot span {
+  font-size: 0.75rem;
+}
+
+/* ==========================================================================
+   TOAST NOTIFICATIONS (CONNECT SOUND & ARRIVAL)
+   ========================================================================== */
+
+.toast-container {
+  position: fixed;
+  top: 84px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  background: rgba(24, 32, 45, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-highlight);
+  border-left: 4px solid var(--brand-primary);
+  padding: 12px 18px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 280px;
+  max-width: 380px;
+  animation: slideToast 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast.toast-arrival {
+  border-left-color: #10b981;
+  background: linear-gradient(135deg, rgba(24, 32, 45, 0.95), rgba(6, 78, 59, 0.4));
+}
+
+.toast.toast-alert {
+  border-left-color: #ef4444;
+}
+
+@keyframes slideToast {
+  from { opacity: 0; transform: translateX(50px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.toast img {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.toast-text {
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+/* ==========================================================================
+   MODALS & DIALOGS
+   ========================================================================== */
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 15, 23, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  padding: 20px;
+}
+
+.modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-dialog {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-highlight);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  transform: translateY(20px) scale(0.96);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-backdrop.open .modal-dialog {
+  transform: translateY(0) scale(1);
+}
+
+.modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Form Controls */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.form-control {
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 90px;
+}
+
+/* Color selector in form */
+.form-color-options {
+  display: flex;
+  gap: 10px;
+}
+
+.form-color-radio {
+  display: none;
+}
+
+.form-color-label {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.form-color-label.green { background: var(--pop-green-bg); color: var(--pop-green-text); }
+.form-color-label.red { background: var(--pop-red-bg); color: var(--pop-red-text); }
+.form-color-label.yellow { background: var(--pop-yellow-bg); color: var(--pop-yellow-text); }
+.form-color-label.blue { background: var(--pop-blue-bg); color: var(--pop-blue-text); }
+.form-color-label.purple { background: var(--pop-purple-bg); color: var(--pop-purple-text); }
+
+.form-color-radio:checked + .form-color-label {
+  border-color: #000;
+  transform: scale(1.04);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* GIF Picker Grid */
+.gif-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.gif-option {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  background: #000;
+  transition: all 0.2s;
+}
+
+.gif-option:hover {
+  transform: scale(1.05);
+  border-color: var(--brand-primary);
+}
+
+.gif-option.selected {
+  border-color: #f59e0b;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.7);
+}
+
+.gif-option img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Comments Section inside Pop It Detail */
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.comment-bubble {
+  display: flex;
+  gap: 10px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.comment-bubble img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.comment-bubble .comment-meta {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.comment-bubble .comment-body {
+  font-size: 0.82rem;
+  color: var(--text-main);
+  margin-top: 2px;
+}
+
+/* Signatures / Acknowledgements (Visto por) */
+.signatures-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.signature-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.signature-badge img {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .parking-lot-sidebar {
+    position: fixed;
+    right: 0;
+    top: 72px;
+    bottom: 0;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+  }
+}
