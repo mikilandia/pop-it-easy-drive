@@ -335,6 +335,10 @@ function renderBoard() {
       }
     });
   });
+
+  if (typeof updateScrollNavVisibility === 'function') {
+    updateScrollNavVisibility();
+  }
 }
 
 // 5. Render Individual Pop It Card with 24h Glow
@@ -1136,13 +1140,24 @@ function setupEventListeners() {
   // Parking Sidebar Toggle & Re-open Handler
   const parkingToggle = document.getElementById('parking-toggle-btn');
   const parkingSidebar = document.getElementById('parking-sidebar');
-  if (parkingToggle && parkingSidebar) {
-    function updateParkingToggleUI() {
-      const isCollapsed = parkingSidebar.classList.contains('collapsed');
-      parkingToggle.innerHTML = isCollapsed ? '◀<span style="font-size: 10px;">🚗</span>' : '▶';
-      parkingToggle.title = isCollapsed ? 'Expandir Estacionamiento' : 'Contraer Estacionamiento';
-    }
+  const appContainer = document.querySelector('.app-container');
 
+  function updateParkingToggleUI() {
+    if (!parkingSidebar || !parkingToggle) return;
+    const isCollapsed = parkingSidebar.classList.contains('collapsed');
+    if (appContainer) {
+      appContainer.classList.toggle('sidebar-collapsed', isCollapsed);
+    }
+    parkingToggle.innerHTML = isCollapsed ? '◀<span style="font-size: 10px;">🚗</span>' : '▶';
+    parkingToggle.title = isCollapsed ? 'Expandir Estacionamiento' : 'Contraer Estacionamiento';
+    setTimeout(() => {
+      if (typeof updateScrollNavVisibility === 'function') {
+        updateScrollNavVisibility();
+      }
+    }, 320);
+  }
+
+  if (parkingToggle && parkingSidebar) {
     parkingToggle.addEventListener('click', (e) => {
       e.stopPropagation();
       parkingSidebar.classList.toggle('collapsed');
@@ -1151,7 +1166,7 @@ function setupEventListeners() {
 
     // Si hacen clic en el borde visible del estacionamiento colapsado, abrirlo
     parkingSidebar.addEventListener('click', (e) => {
-      if (parkingSidebar.classList.contains('collapsed') && e.target !== parkingToggle) {
+      if (parkingSidebar.classList.contains('collapsed') && !e.target.closest('#parking-toggle-btn')) {
         parkingSidebar.classList.remove('collapsed');
         updateParkingToggleUI();
       }
@@ -1167,6 +1182,20 @@ function setupEventListeners() {
   const btnScrollLeft = document.getElementById('btn-board-scroll-left');
   const btnScrollRight = document.getElementById('btn-board-scroll-right');
 
+  function updateScrollNavVisibility() {
+    if (!boardViewport || !btnScrollLeft || !btnScrollRight) return;
+    const maxScroll = boardViewport.scrollWidth - boardViewport.clientWidth;
+    if (maxScroll <= 15) {
+      btnScrollLeft.style.display = 'none';
+      btnScrollRight.style.display = 'none';
+    } else {
+      btnScrollLeft.style.display = 'flex';
+      btnScrollRight.style.display = 'flex';
+      btnScrollLeft.style.opacity = boardViewport.scrollLeft <= 10 ? '0.3' : '1';
+      btnScrollRight.style.opacity = boardViewport.scrollLeft >= maxScroll - 10 ? '0.3' : '1';
+    }
+  }
+
   if (btnScrollLeft && boardViewport) {
     btnScrollLeft.addEventListener('click', () => {
       boardViewport.scrollBy({ left: -360, behavior: 'smooth' });
@@ -1180,6 +1209,9 @@ function setupEventListeners() {
   }
 
   if (boardViewport) {
+    boardViewport.addEventListener('scroll', updateScrollNavVisibility, { passive: true });
+    window.addEventListener('resize', updateScrollNavVisibility);
+    setTimeout(updateScrollNavVisibility, 400);
     // Desplazamiento horizontal con la rueda del ratón
     boardViewport.addEventListener('wheel', (e) => {
       const cardsCont = e.target.closest('.cards-container');
