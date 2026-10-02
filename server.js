@@ -258,9 +258,9 @@ app.post('/api/register', (req, res) => {
   res.status(403).json({ error: 'El registro público está desactivado. Solo el administrador puede crear nuevas cuentas.' });
 });
 
-// 4. Update Profile (Change Shift or Avatar)
+// 4. Update Profile (Permite a cualquier usuario cambiar su nombre, username, PIN, turno y GIF)
 app.post('/api/users/profile', (req, res) => {
-  const { userId, shift, avatarGif, displayName } = req.body;
+  const { userId, username, pin, shift, avatarGif, displayName } = req.body;
   const users = readJson('users.json', []);
   const user = users.find(u => u.id === userId);
 
@@ -268,31 +268,51 @@ app.post('/api/users/profile', (req, res) => {
     return res.status(404).json({ error: 'Usuario no encontrado' });
   }
 
+  // Si desea cambiar su username, verificar que no esté ocupado por otra persona
+  if (username && username.trim().toLowerCase() !== user.username) {
+    const cleanUsername = username.trim().toLowerCase();
+    const isTaken = users.some(u => u.id !== userId && u.username.toLowerCase() === cleanUsername);
+    if (isTaken) {
+      return res.status(409).json({ error: `El nombre de usuario "${cleanUsername}" ya está en uso por otro operador.` });
+    }
+    user.username = cleanUsername;
+  }
+
+  if (displayName && displayName.trim()) {
+    user.displayName = displayName.trim();
+  }
+
+  if (pin && pin.trim()) {
+    user.pin = pin.trim();
+  }
+
   if (shift) user.shift = shift;
   if (avatarGif) user.avatarGif = avatarGif;
-  if (displayName) user.displayName = displayName;
 
   writeJson('users.json', users);
 
-  // Update in parking lot if online
+  // Actualizar en vivo en el estacionamiento de turnos
   for (const [sId, connected] of connectedUsers.entries()) {
     if (connected.userId === userId) {
       connected.shift = user.shift;
       connected.avatarGif = user.avatarGif;
       connected.displayName = user.displayName;
+      connected.username = user.username;
     }
   }
   io.emit('parking:update', Array.from(connectedUsers.values()));
 
   res.json({
     success: true,
+    message: 'Perfil y credenciales actualizadas con éxito.',
     user: {
       id: user.id,
       username: user.username,
       displayName: user.displayName,
       role: user.role,
       shift: user.shift,
-      avatarGif: user.avatarGif
+      avatarGif: user.avatarGif,
+      pin: user.pin
     }
   });
 });

@@ -735,14 +735,16 @@ function setupEventListeners() {
     btnManageGifs.addEventListener('click', () => openModal('modal-gif-manager'));
   }
 
-  // User Profile Trigger
+  // User Profile Trigger (Abre editor de perfil y ajustes de cuenta)
   const profileTrigger = document.getElementById('user-profile-trigger');
   if (profileTrigger) {
     profileTrigger.addEventListener('click', () => {
       if (state.currentUser) {
+        populateMyProfileModal();
         openModal('modal-user-menu');
       } else {
-        openModal('modal-auth');
+        const gate = document.getElementById('auth-gate-screen');
+        if (gate) gate.style.display = 'flex';
       }
     });
   }
@@ -1040,6 +1042,83 @@ function setupEventListeners() {
     statusSelect.addEventListener('change', () => {
       if (state.socket) {
         state.socket.emit('parking:status', statusSelect.value);
+      }
+    });
+  }
+
+  // Profile Edit Form Submit (Permite a cualquier usuario cambiar su GIF, username, nombre, PIN o turno)
+  const formEditProfile = document.getElementById('form-edit-my-profile');
+  if (formEditProfile) {
+    formEditProfile.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!state.currentUser) return;
+
+      const username = document.getElementById('profile-edit-username').value.trim();
+      const displayName = document.getElementById('profile-edit-displayname').value.trim();
+      const pin = document.getElementById('profile-edit-pin').value.trim();
+      const shift = document.getElementById('profile-edit-shift').value;
+      const status = document.getElementById('select-my-status').value;
+      const msgBox = document.getElementById('profile-edit-msg');
+
+      try {
+        const res = await fetch('/api/users/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: state.currentUser.id,
+            username,
+            displayName,
+            pin,
+            shift,
+            avatarGif: selectedMyProfileGif || state.currentUser.avatarGif
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          msgBox.style.display = 'block';
+          msgBox.style.background = 'rgba(239, 68, 68, 0.15)';
+          msgBox.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+          msgBox.style.color = '#ef4444';
+          msgBox.textContent = data.error || 'Error al actualizar perfil';
+          return;
+        }
+
+        // Actualizar usuario en memoria y almacenamiento local
+        state.currentUser = data.user;
+        localStorage.setItem('popit_user', JSON.stringify(data.user));
+
+        if (state.socket) {
+          state.socket.emit('parking:status', status);
+          state.socket.emit('parking:join', state.currentUser);
+        }
+
+        updateUserNavUI();
+        populateMyProfileModal();
+
+        msgBox.style.display = 'block';
+        msgBox.style.background = 'rgba(16, 185, 129, 0.15)';
+        msgBox.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+        msgBox.style.color = '#34d399';
+        msgBox.textContent = '✅ ¡Tus datos y avatar se han actualizado con éxito!';
+
+        showToast({
+          title: '✅ Perfil Guardado',
+          message: `Credenciales y avatar actualizados para "${data.user.displayName}".`,
+          avatar: data.user.avatarGif
+        });
+
+        setTimeout(() => {
+          msgBox.style.display = 'none';
+          closeModal('modal-user-menu');
+        }, 1200);
+
+      } catch (err) {
+        msgBox.style.display = 'block';
+        msgBox.style.background = 'rgba(239, 68, 68, 0.15)';
+        msgBox.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+        msgBox.style.color = '#ef4444';
+        msgBox.textContent = 'Error de conexión con el servidor.';
       }
     });
   }
@@ -1363,4 +1442,62 @@ async function loadAdminUsersList() {
   } catch (err) {
     container.innerHTML = '<div style="color: #ef4444; padding: 16px;">Error al cargar la lista de usuarios.</div>';
   }
+}
+
+// 18. Funciones para Edición de Mi Perfil (Cualquier usuario logueado)
+let selectedMyProfileGif = null;
+
+function populateMyProfileModal() {
+  if (!state.currentUser) return;
+
+  const u = state.currentUser;
+  selectedMyProfileGif = u.avatarGif;
+
+  const previewImg = document.getElementById('profile-current-avatar-preview');
+  const dName = document.getElementById('profile-current-displayname');
+  const roleBadge = document.getElementById('profile-current-role-badge');
+  const uTag = document.getElementById('profile-current-username-tag');
+
+  if (previewImg) previewImg.src = u.avatarGif;
+  if (dName) dName.textContent = u.displayName;
+  if (roleBadge) {
+    roleBadge.textContent = u.role === 'admin' ? 'ADMINISTRADOR' : 'OPERADOR BÁSICO';
+    roleBadge.className = 'role-badge ' + (u.role || 'basic');
+  }
+  if (uTag) uTag.textContent = '@' + u.username;
+
+  const inputUser = document.getElementById('profile-edit-username');
+  const inputDisplay = document.getElementById('profile-edit-displayname');
+  const inputPin = document.getElementById('profile-edit-pin');
+  const inputShift = document.getElementById('profile-edit-shift');
+
+  if (inputUser) inputUser.value = u.username;
+  if (inputDisplay) inputDisplay.value = u.displayName;
+  if (inputPin) inputPin.value = u.pin || '1234';
+  if (inputShift) inputShift.value = u.shift || 'Turno Mañana';
+
+  renderMyProfileGifPicker();
+}
+
+function renderMyProfileGifPicker() {
+  const container = document.getElementById('profile-edit-gif-picker');
+  if (!container) return;
+
+  container.innerHTML = state.gifs.map(g => `
+    <div class="gif-picker-item ${selectedMyProfileGif === g.url ? 'selected' : ''}" data-url="${g.url}">
+      <img src="${g.url}" alt="${g.title}">
+    </div>
+  `).join('');
+
+  container.querySelectorAll('.gif-picker-item').forEach(item => {
+    item.addEventListener('click', () => {
+      container.querySelectorAll('.gif-picker-item').forEach(i => i.classList.remove('selected'));
+      item.classList.add('selected');
+      selectedMyProfileGif = item.dataset.url;
+
+      // Actualizar vista previa instantánea
+      const previewImg = document.getElementById('profile-current-avatar-preview');
+      if (previewImg) previewImg.src = selectedMyProfileGif;
+    });
+  });
 }

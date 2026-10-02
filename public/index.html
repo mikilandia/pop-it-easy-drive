@@ -348,22 +348,73 @@
        MODAL 6: USER STATUS & PROFILE MENU
        ========================================================================== -->
   <div class="modal-backdrop" id="modal-user-menu">
-    <div class="modal-dialog" style="max-width: 400px;">
+    <div class="modal-dialog" style="max-width: 480px;">
       <div class="modal-header">
-        <h3>👤 Mi Estado de Turno</h3>
+        <h3>👤 Mi Perfil y Ajustes de Cuenta</h3>
         <button class="modal-close-btn">&times;</button>
       </div>
       <div class="modal-body">
-        <div class="form-group" style="margin-bottom: 14px;">
-          <label>Estado en el Estacionamiento:</label>
-          <select id="select-my-status" class="form-control">
-            <option value="Trabajando en el tablero 📝">Trabajando en el tablero 📝</option>
-            <option value="En pausa café ☕">En pausa café ☕</option>
-            <option value="En revisión de línea 🔍">En revisión de línea 🔍</option>
-            <option value="En relevo de guardia 🚗">En relevo de guardia 🚗</option>
-            <option value="Atendiendo urgencia 🚨">Atendiendo urgencia 🚨</option>
-          </select>
-        </div>
+        <form id="form-edit-my-profile">
+          <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 18px; padding: 12px; background: rgba(0, 0, 0, 0.25); border-radius: 12px; border: 1px solid var(--border-color);">
+            <img src="" id="profile-current-avatar-preview" style="width: 54px; height: 54px; border-radius: 12px; object-fit: cover; border: 2px solid var(--brand-primary);" alt="Avatar">
+            <div>
+              <strong id="profile-current-displayname" style="font-size: 1rem; color: #fff; display: block;">Usuario</strong>
+              <span id="profile-current-role-badge" class="role-badge basic">Operador</span>
+              <span id="profile-current-username-tag" style="font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono);">@usuario</span>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div class="form-group">
+              <label>Nombre de Usuario (login):</label>
+              <input type="text" id="profile-edit-username" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Nombre Completo / Apodo:</label>
+              <input type="text" id="profile-edit-displayname" class="form-control" required>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div class="form-group">
+              <label>PIN o Contraseña:</label>
+              <input type="text" id="profile-edit-pin" class="form-control" placeholder="••••" required>
+            </div>
+            <div class="form-group">
+              <label>Mi Turno de Trabajo:</label>
+              <select id="profile-edit-shift" class="form-control">
+                <option value="Turno Mañana">☀️ Turno Mañana</option>
+                <option value="Turno Tarde">⛅ Turno Tarde</option>
+                <option value="Turno Noche">🌙 Turno Noche</option>
+                <option value="Turno General">🏢 Turno General</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label>Estado en el Estacionamiento:</label>
+            <select id="select-my-status" class="form-control">
+              <option value="Trabajando en el tablero 📝">Trabajando en el tablero 📝</option>
+              <option value="En pausa café ☕">En pausa café ☕</option>
+              <option value="En revisión de línea 🔍">En revisión de línea 🔍</option>
+              <option value="En relevo de guardia 🚗">En relevo de guardia 🚗</option>
+              <option value="Atendiendo urgencia 🚨">Atendiendo urgencia 🚨</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label>Elige tu GIF Animado para el Estacionamiento:</label>
+            <div class="gif-picker-grid" id="profile-edit-gif-picker" style="max-height: 140px; overflow-y: auto;">
+              <!-- GIFs renderizados dinámicamente -->
+            </div>
+          </div>
+
+          <div id="profile-edit-msg" style="display: none; padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; margin-bottom: 12px;"></div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 12px;">
+            💾 Guardar Cambios en Mi Perfil
+          </button>
+        </form>
 
         <button class="btn btn-secondary" id="btn-logout" style="width: 100%; color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">
           🚪 Cerrar Sesión / Salir del Estacionamiento
