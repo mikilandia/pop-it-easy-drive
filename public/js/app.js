@@ -22,12 +22,10 @@ const state = {
 
 // Initialize Application
 document.addEventListener('DOMContentLoaded', async () => {
-  initSocket();
   setupEventListeners();
-  loadSavedUser();
-  await fetchInitialData();
   startGlowTicker();
   detectCurrentShift();
+  await checkAuthAndInitialize();
 });
 
 // 1. Socket.IO Setup
@@ -146,10 +144,29 @@ function initSocket() {
   });
 }
 
-// 2. Fetch Board State from REST API
+// 2. Fetch Board State from REST API (Solo si está autenticado)
 async function fetchInitialData() {
+  if (!state.currentUser) return;
+
   try {
-    const res = await fetch('/api/board');
+    const res = await fetch('/api/board', {
+      headers: {
+        'x-user-id': state.currentUser.id
+      }
+    });
+
+    if (res.status === 401) {
+      // Sesión expirada o no autorizada
+      localStorage.removeItem('popit_user');
+      state.currentUser = null;
+      const gateScreen = document.getElementById('auth-gate-screen');
+      const appLayout = document.getElementById('app-main-layout');
+      if (gateScreen) gateScreen.style.display = 'flex';
+      if (appLayout) appLayout.style.display = 'none';
+      updateUserNavUI();
+      return;
+    }
+
     const data = await res.json();
     state.boards = data.boards || [];
     state.popits = data.popits || [];
@@ -166,21 +183,32 @@ async function fetchInitialData() {
   }
 }
 
-// 3. User Authentication & Presence
-function loadSavedUser() {
+// 3. User Authentication & Presence (Login Gate Obligatorio)
+async function checkAuthAndInitialize() {
   const saved = localStorage.getItem('popit_user');
+  const gateScreen = document.getElementById('auth-gate-screen');
+  const appLayout = document.getElementById('app-main-layout');
+
   if (saved) {
     try {
       state.currentUser = JSON.parse(saved);
+      if (gateScreen) gateScreen.style.display = 'none';
+      if (appLayout) appLayout.style.display = 'flex';
       updateUserNavUI();
+      initSocket();
+      await fetchInitialData();
       announceParkingPresence();
+      return;
     } catch (e) {
       localStorage.removeItem('popit_user');
     }
-  } else {
-    // Show login modal if not logged in
-    openModal('modal-auth');
   }
+
+  // Si no ha iniciado sesión, bloquear completamente la pantalla
+  state.currentUser = null;
+  if (gateScreen) gateScreen.style.display = 'flex';
+  if (appLayout) appLayout.style.display = 'none';
+  updateUserNavUI();
 }
 
 function saveUser(user) {
@@ -834,8 +862,19 @@ function setupEventListeners() {
         }
 
         errorMsg.style.display = 'none';
-        saveUser(data.user);
-        closeModal('modal-auth');
+        state.currentUser = data.user;
+        localStorage.setItem('popit_user', JSON.stringify(data.user));
+
+        // Ocultar pantalla de bloqueo y mostrar tablero
+        const gateScreen = document.getElementById('auth-gate-screen');
+        const appLayout = document.getElementById('app-main-layout');
+        if (gateScreen) gateScreen.style.display = 'none';
+        if (appLayout) appLayout.style.display = 'flex';
+
+        updateUserNavUI();
+        initSocket();
+        await fetchInitialData();
+        announceParkingPresence();
         window.soundEngine.playUserConnected();
       } catch (err) {
         errorMsg.textContent = 'Error al conectar con el servidor';

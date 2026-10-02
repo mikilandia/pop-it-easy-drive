@@ -12,176 +12,182 @@
   <div class="board-background"></div>
 
   <!-- ==========================================================================
-       TOP NAVIGATION BAR
+       PANTALLA DE ACCESO OBLIGATORIO (LOGIN GATE - NINGÚN DATO ES VISIBLE ANTES DE ENTRAR)
        ========================================================================== -->
-  <header class="top-navbar">
-    <div class="brand-section">
-      <div class="brand-logo-icon">🚗</div>
-      <div class="brand-text">
-        <h1>Pop It <span class="badge-drive">EASY DRIVE</span></h1>
-      </div>
-      <div class="shift-current-badge">
-        <span class="indicator-dot"></span>
-        <span id="current-shift-name">Turno en Curso</span>
-      </div>
-    </div>
-
-    <div class="nav-actions">
-      <!-- Admin Action Buttons -->
-      <button class="btn btn-primary admin-only" id="btn-new-popit" style="display: none;">
-        <span>➕</span> Nuevo Pop It
-      </button>
-
-      <button class="btn btn-secondary admin-only" id="btn-manage-gifs" style="display: none;">
-        <span>🖼️</span> Galería de GIFs
-      </button>
-
-      <button class="btn btn-secondary admin-only" id="btn-manage-users" style="display: none;" title="Crear y gestionar cuentas de usuarios">
-        <span>👥</span> Usuarios
-      </button>
-
-      <!-- Network / Invite Colleagues Button -->
-      <button class="btn btn-secondary" id="btn-invite-colleagues" title="Compartir enlace para compañeros en red">
-        <span>🌐</span> Conectar Compañeros
-      </button>
-
-      <!-- Audio Mute Toggle -->
-      <button class="btn-icon" id="btn-toggle-sound" title="Sonido de timbre y llegadas">
-        🔔
-      </button>
-
-      <!-- Board Texture Theme Toggle (Cork / Dark Carbon) -->
-      <button class="btn-icon" id="btn-toggle-theme" title="Cambiar fondo de tablero (Corcho / Carbón)">
-        🏁
-      </button>
-
-      <!-- User Profile Menu Trigger -->
-      <div class="user-profile-btn" id="user-profile-trigger">
-        <span style="font-size: 1.2rem;">👤</span>
-        <span class="user-name-label">Ingresar</span>
-      </div>
-    </div>
-  </header>
-
-  <!-- ==========================================================================
-       SUBHEADER: SEARCH & QUICK FILTERS
-       ========================================================================== -->
-  <section class="filter-bar">
-    <div class="filter-left">
-      <div class="search-input-wrapper">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="board-search-input" placeholder="Buscar por título, contenido o autor...">
+  <div class="auth-gate-screen" id="auth-gate-screen">
+    <div class="auth-gate-card">
+      <div class="auth-gate-header">
+        <div class="auth-gate-logo">🚗</div>
+        <h2 class="auth-gate-title">Pop It <span>EASY DRIVE</span></h2>
+        <p class="auth-gate-subtitle">
+          Tablero Digital de Comunicación Operativa y Turnos de Trabajo
+        </p>
       </div>
 
-      <!-- 24-Hour Resplandor Filter Button -->
-      <button class="btn-glow-filter" id="btn-glow-filter" title="Filtrar notas que fueron modificadas en las últimas 24 horas">
-        <span>⚡ Novedades de Turno</span>
-        <span style="background: rgba(0,0,0,0.25); padding: 2px 7px; border-radius: 10px; font-size: 0.72rem;" id="glow-count-badge">0</span>
-      </button>
-
-      <!-- Color Filter Pills -->
-      <div class="color-pills" title="Filtrar por tipo de Pop It">
-        <div class="color-pill active" data-color="all" title="Ver todos"></div>
-        <div class="color-pill" data-color="green" title="Verde: Informativo / General"></div>
-        <div class="color-pill" data-color="red" title="Rojo: Urgente / Alerta"></div>
-        <div class="color-pill" data-color="yellow" title="Amarillo: Precaución / Pendientes"></div>
-        <div class="color-pill" data-color="blue" title="Azul: Procedimiento / Calidad"></div>
-        <div class="color-pill" data-color="purple" title="Morado: Relevo de Turno"></div>
-      </div>
-
-      <!-- Quick Jump to Columns -->
-      <div class="column-jump-pills" id="column-jump-pills" title="Ir directamente a una columna">
-        <!-- Rendered dynamically -->
-      </div>
-    </div>
-
-    <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
-      <span>💡 <em>Arrastra o usa las flechas ◀ ▶ para ver todas las columnas</em></span>
-    </div>
-  </section>
-
-  <!-- ==========================================================================
-       MAIN APP CONTAINER: BOARD + PARKING LOT SIDEBAR
-       ========================================================================== -->
-  <main class="app-container">
-    <!-- Botones flotantes de desplazamiento horizontal -->
-    <button class="board-nav-btn btn-left" id="btn-board-scroll-left" title="Desplazar a la izquierda (Ver columnas anteriores)">
-      ◀
-    </button>
-    <button class="board-nav-btn btn-right" id="btn-board-scroll-right" title="Desplazar a la derecha (Ver más columnas)">
-      ▶
-    </button>
-
-    <!-- Board Viewport with Columns -->
-    <div class="board-viewport" id="board-viewport">
-      <div class="columns-container" id="columns-container">
-        <!-- Columns rendered dynamically -->
-      </div>
-    </div>
-
-    <!-- Estacionamiento de Turnos (Shift Parking Lot) -->
-    <aside class="parking-lot-sidebar" id="parking-sidebar">
-      <div class="parking-header">
-        <div class="parking-title">
-          <h2>
-            <span>🚗</span> Estacionamiento
-            <span class="parking-badge">EASY DRIVE</span>
-          </h2>
+      <form id="form-login">
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label style="font-size: 0.82rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; display: block;">
+            Nombre de Usuario:
+          </label>
+          <input type="text" id="login-username" class="form-control" placeholder="ej: admin, carlos, laura, diego" required autofocus>
         </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 0.75rem; font-weight: 700; color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 10px;">
-            <span id="parking-online-count">0</span> en línea
-          </span>
-          <button class="parking-toggle-btn" id="parking-toggle-btn" title="Contraer/Expandir Estacionamiento">▶</button>
+
+        <div class="form-group" style="margin-bottom: 18px;">
+          <label style="font-size: 0.82rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; display: block;">
+            PIN o Contraseña:
+          </label>
+          <input type="password" id="login-pin" class="form-control" placeholder="••••" required>
+        </div>
+
+        <div id="login-error-msg" style="color: #ef4444; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 10px; font-size: 0.82rem; margin-bottom: 14px; display: none;"></div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <span>Entrar al Tablero de Turno</span> 🚗
+        </button>
+      </form>
+
+      <div class="auth-gate-footer-note">
+        🔒 <strong>Acceso Restringido:</strong> Este sistema es privado para la empresa. Si necesitas una cuenta o restablecer tu PIN, solicítalo al <strong>Administrador</strong>.
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       CONTENIDO PRINCIPAL DEL SISTEMA (OCULTO HASTA INICIAR SESIÓN)
+       ========================================================================== -->
+  <div id="app-main-layout" style="display: none; flex-direction: column; min-height: 100vh;">
+    <!-- ==========================================================================
+         TOP NAVIGATION BAR
+         ========================================================================== -->
+    <header class="top-navbar">
+      <div class="brand-section">
+        <div class="brand-logo-icon">🚗</div>
+        <div class="brand-text">
+          <h1>Pop It <span class="badge-drive">EASY DRIVE</span></h1>
+        </div>
+        <div class="shift-current-badge">
+          <span class="indicator-dot"></span>
+          <span id="current-shift-name">Turno en Curso</span>
         </div>
       </div>
 
-      <!-- Road / Bays Container -->
-      <div class="parking-bays-scroll" id="parking-bays-scroll">
-        <!-- Parking slots rendered dynamically -->
+      <div class="nav-actions">
+        <!-- Admin Action Buttons -->
+        <button class="btn btn-primary admin-only" id="btn-new-popit" style="display: none;">
+          <span>➕</span> Nuevo Pop It
+        </button>
+
+        <button class="btn btn-secondary admin-only" id="btn-manage-gifs" style="display: none;">
+          <span>🖼️</span> Galería GIFs
+        </button>
+
+        <!-- Panel de Administración de Usuarios (Exclusivo Admin) -->
+        <button class="btn admin-only" id="btn-manage-users" style="display: none; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 800; border: none; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);" title="Panel de Control para Crear y Eliminar Usuarios">
+          <span>⚙️</span> Panel de Usuarios
+        </button>
+
+        <!-- Network / Invite Colleagues Button -->
+        <button class="btn btn-secondary" id="btn-invite-colleagues" title="Compartir enlace para compañeros en red">
+          <span>🌐</span> Conectar Compañeros
+        </button>
+
+        <!-- Audio Mute Toggle -->
+        <button class="btn-icon" id="btn-toggle-sound" title="Sonido de timbre y llegadas">
+          🔔
+        </button>
+
+        <!-- Board Texture Theme Toggle (Cork / Dark Carbon) -->
+        <button class="btn-icon" id="btn-toggle-theme" title="Cambiar fondo de tablero (Corcho / Carbón)">
+          🏁
+        </button>
+
+        <!-- User Profile Menu Trigger -->
+        <div class="user-profile-btn" id="user-profile-trigger">
+          <span style="font-size: 1.2rem;">👤</span>
+          <span class="user-name-label">Ingresar</span>
+        </div>
       </div>
-    </aside>
-  </main>
+    </header>
 
-  <!-- ==========================================================================
-       TOAST NOTIFICATIONS CONTAINER (Arrival Chimes & Alerts)
-       ========================================================================== -->
-  <div class="toast-container" id="toast-container"></div>
+    <!-- ==========================================================================
+         SUBHEADER: SEARCH & QUICK FILTERS
+         ========================================================================== -->
+    <section class="filter-bar">
+      <div class="filter-left">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="board-search-input" placeholder="Buscar por título, contenido o autor...">
+        </div>
 
-  <!-- ==========================================================================
-       MODAL 1: AUTHENTICATION (LOGIN & REGISTRATION WITH GIF SELECTOR)
-       ========================================================================== -->
-  <div class="modal-backdrop" id="modal-auth">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h3>🚗 Bienvenido a Pop It EASY DRIVE</h3>
-        <button class="modal-close-btn">&times;</button>
+        <!-- 24-Hour Resplandor Filter Button -->
+        <button class="btn-glow-filter" id="btn-glow-filter" title="Filtrar notas que fueron modificadas en las últimas 24 horas">
+          <span>⚡ Novedades de Turno</span>
+          <span style="background: rgba(0,0,0,0.25); padding: 2px 7px; border-radius: 10px; font-size: 0.72rem;" id="glow-count-badge">0</span>
+        </button>
+
+        <!-- Color Filter Pills -->
+        <div class="color-pills" title="Filtrar por tipo de Pop It">
+          <div class="color-pill active" data-color="all" title="Ver todos"></div>
+          <div class="color-pill" data-color="green" title="Verde: Informativo / General"></div>
+          <div class="color-pill" data-color="red" title="Rojo: Urgente / Alerta"></div>
+          <div class="color-pill" data-color="yellow" title="Amarillo: Precaución / Pendientes"></div>
+          <div class="color-pill" data-color="blue" title="Azul: Procedimiento / Calidad"></div>
+          <div class="color-pill" data-color="purple" title="Morado: Relevo de Turno"></div>
+        </div>
+
+        <!-- Quick Jump to Columns -->
+        <div class="column-jump-pills" id="column-jump-pills" title="Ir directamente a una columna">
+          <!-- Rendered dynamically -->
+        </div>
       </div>
-        <div id="view-auth-login">
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
-            Ingresa con tu usuario y PIN asignado para operar en el tablero:
-          </p>
-          <form id="form-login">
-            <div class="form-group" style="margin-bottom: 12px;">
-              <label>Usuario (ej: admin, carlos, laura, diego):</label>
-              <input type="text" id="login-username" class="form-control" placeholder="Nombre de usuario" required>
-            </div>
-            <div class="form-group" style="margin-bottom: 16px;">
-              <label>PIN o Contraseña:</label>
-              <input type="password" id="login-pin" class="form-control" placeholder="••••" required>
-            </div>
-            <div id="login-error-msg" style="color: #ef4444; font-size: 0.8rem; margin-bottom: 12px; display: none;"></div>
-            <button type="submit" class="btn btn-primary" style="width: 100%;">
-              Entrar al Turno 🚗
-            </button>
-          </form>
 
-          <div style="margin-top: 18px; padding: 12px; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; font-size: 0.78rem; color: #94a3b8; text-align: center; line-height: 1.4;">
-            🔒 <strong>Acceso Restringido:</strong> Solo el Administrador puede crear nuevas cuentas y asignar turnos u operadores.
+      <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+        <span>💡 <em>Arrastra o usa las flechas ◀ ▶ para ver todas las columnas</em></span>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         MAIN APP CONTAINER: BOARD + PARKING LOT SIDEBAR
+         ========================================================================== -->
+    <main class="app-container">
+      <!-- Botones flotantes de desplazamiento horizontal -->
+      <button class="board-nav-btn btn-left" id="btn-board-scroll-left" title="Desplazar a la izquierda (Ver columnas anteriores)">
+        ◀
+      </button>
+      <button class="board-nav-btn btn-right" id="btn-board-scroll-right" title="Desplazar a la derecha (Ver más columnas)">
+        ▶
+      </button>
+
+      <!-- Board Viewport with Columns -->
+      <div class="board-viewport" id="board-viewport">
+        <div class="columns-container" id="columns-container">
+          <!-- Columns rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Estacionamiento de Turnos (Shift Parking Lot) -->
+      <aside class="parking-lot-sidebar" id="parking-sidebar">
+        <div class="parking-header">
+          <div class="parking-title">
+            <h2>
+              <span>🚗</span> Estacionamiento
+              <span class="parking-badge">EASY DRIVE</span>
+            </h2>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 0.75rem; font-weight: 700; color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 10px;">
+              <span id="parking-online-count">0</span> en línea
+            </span>
+            <button class="parking-toggle-btn" id="parking-toggle-btn" title="Contraer/Expandir Estacionamiento">▶</button>
           </div>
         </div>
-      </div>
-    </div>
+
+        <!-- Road / Bays Container -->
+        <div class="parking-bays-scroll" id="parking-bays-scroll">
+          <!-- Parking slots rendered dynamically -->
+        </div>
+      </aside>
+    </main>
   </div>
 
   <!-- ==========================================================================

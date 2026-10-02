@@ -113,12 +113,23 @@ const connectedUsers = new Map();
 
 // REST API ROUTES
 
-// 1. Initial State
+// 1. Initial State (Protegido: exige sesión activa para proteger los datos)
 app.get('/api/board', (req, res) => {
+  const userId = req.headers['x-user-id'] || req.query.userId;
+  const users = readJson('users.json', []);
+  const validUser = users.find(u => u.id === userId);
+
+  if (!validUser) {
+    return res.status(401).json({
+      error: 'Acceso no autorizado: debes iniciar sesión con tu cuenta para ver el tablero.',
+      requiresLogin: true
+    });
+  }
+
   const boards = readJson('boards.json', []);
   const popits = readJson('popits.json', []);
   const gifs = readJson('gifs.json', []);
-  const users = readJson('users.json', []).map(u => ({
+  const safeUsers = users.map(u => ({
     id: u.id,
     username: u.username,
     displayName: u.displayName,
@@ -131,7 +142,7 @@ app.get('/api/board', (req, res) => {
     boards,
     popits,
     gifs,
-    users,
+    users: safeUsers,
     activeParking: Array.from(connectedUsers.values()),
     networkAddresses: getNetworkAddresses()
   });

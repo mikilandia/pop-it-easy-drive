@@ -1494,3 +1494,87 @@ textarea.form-control {
   background: #ef4444;
   color: #ffffff;
 }
+
+/* ==========================================================================
+   PANTALLA DE ACCESO OBLIGATORIO (LOGIN GATE SCREEN)
+   Protege el tablero y no muestra ningún dato hasta autenticarse
+   ========================================================================== */
+.auth-gate-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: radial-gradient(circle at 50% 30%, #1e293b 0%, #0a0e17 100%);
+  overflow-y: auto;
+}
+
+.auth-gate-card {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(24, 32, 45, 0.95);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 24px;
+  padding: 36px 32px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), 0 0 35px rgba(56, 189, 248, 0.15);
+  backdrop-filter: blur(20px);
+  animation: authCardIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes authCardIn {
+  from { opacity: 0; transform: scale(0.94) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.auth-gate-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.auth-gate-logo {
+  width: 68px;
+  height: 68px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 25px rgba(2, 132, 199, 0.45);
+}
+
+.auth-gate-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.3px;
+}
+
+.auth-gate-title span {
+  color: #38bdf8;
+}
+
+.auth-gate-subtitle {
+  font-size: 0.83rem;
+  color: #94a3b8;
+  margin-top: 6px;
+  line-height: 1.45;
+}
+
+.auth-gate-footer-note {
+  margin-top: 22px;
+  padding: 12px 14px;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 12px;
+  font-size: 0.76rem;
+  color: #94a3b8;
+  text-align: center;
+  line-height: 1.45;
+}
